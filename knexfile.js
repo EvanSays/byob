@@ -1,7 +1,7 @@
 module.exports = {
   development: {
     client: 'pg',
-    connection: 'postgres://localhost/goodbooks',
+    connection: 'postgres://localhost/crispr',
     migrations: {
       directory: './db/migrations'
     },
