@@ -1,18 +1,5 @@
-const csvFilePath = '../../../goodbooks-10k/books.csv';
-const csv = require('csvtojson');
-
-csv()
-.fromFile(csvFilePath)
-.on('json', jsonObj => {
-    // combine csv header row and csv line to a json object
-    // jsonObj.a ==> 1 or 4
-})
-.on('done', error => {
-    console.log('end')
-})
-
-
-
+const booksData = require('../../goodbooks-10k/books.json')
+const ratings = require('../../goodbooks-10k/ratings.json')
 
 const createBook = (knex, book) => {
   return knex('books').insert({
@@ -22,17 +9,15 @@ const createBook = (knex, book) => {
     goodreads_work_id: book.goodreads_work_id
   }, 'book_id')
   .then(bookId => {
-    let ratingPromises = []
-
-    book.ratings.forEach(rating => {
-      ratingPromises.push(
-        createRating(knex, {
-          user_id: rating.user_id,
-          rating: rating.rating,
-          book_id: bookId[0]
-        })
-      )
+    let ratingPromises = [];
+    ratings.forEach(rating => {
+      ratingPromises.push(createRating(knex, {
+        user_id: rating.user_id,
+        rating: rating.rating,
+        book_id: bookId[0]
+      }))
     })
+    return Promise.all(ratingPromises)
   })
 }
 
@@ -42,14 +27,14 @@ const createRating = (knex, rating) => {
 
 exports.seed = (knex, Promise) => {
   return knex('ratings').del()
-        .then( () => knex('books').del())
-        .then( () => {
-          let bookPromises = []
+  .then(() => knex('books').del())
+  .then(() => {
+    let bookPromises = []
 
-          booksData.forEach( book => {
-            bookPromises.push(createBook(knex, book))
-          })
-          return Promise.all(bookPromises)
-        })
-        .catch(error => console.log(`error seeding data: ${error}`))
+    booksData.forEach(book => {
+      bookPromises.push(createBook(knex, book))
+    })
+    return Promise.all(bookPromises)
+  })
+  .catch(error => console.log(`error seeding data: ${error}`))
 }

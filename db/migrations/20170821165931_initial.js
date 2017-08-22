@@ -14,8 +14,7 @@ exports.up = function(knex, Promise) {
       table.integer('user_id');
       table.integer('rating');
       table.integer('book_id').unsigned()
-      table.foreign('book_id')
-        .references('books.book_id');
+      table.foreign('book_id').references('books.book_id');
 
       table.timestamps(true, true);
     })
