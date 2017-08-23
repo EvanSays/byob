@@ -11,13 +11,13 @@ const routes          = require('./routes.js')
 
 app.set('port', process.env.PORT || 6333);
 
-app.use(express.static(path.join(__dirname + '/../public')));
+app.use(express.static(path.join(`${__dirname}/../public`)));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded( { extended: true } ));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/', (request, response) => {
-  response.sendFile(path.join(__dirname + '/../public/index.html'))
-})
+  response.sendFile(path.join(`${__dirname}/../public/index.html`));
+});
 
 //=--> GET ALL JOURNALS FROM 'JOURNALS' <--=//
 app.get(routes.getAllJournals, (request, response) => {
@@ -51,7 +51,5 @@ app.get(`${routes.getAllJournals}:pubmed`, (request, response) => {
 })
 
 app.listen(app.get('port'), () => {
-  console.log(`Server is running on ${app.get('port')}`)
-})
-
-module.exports = app;
+  console.log(`Server is running on ${app.get('port')}`);
+});

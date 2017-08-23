@@ -1,13 +1,13 @@
-exports.up = function(knex, Promise) {
+exports.up = function (knex, Promise) {
   return Promise.all([
-    knex.schema.createTable('journals', function(table) {
+    knex.schema.createTable('journals', (table) => {
       table.increments('id').primary();
       table.integer('pubmed').unique();
 
       table.timestamps(true, true);
     }),
 
-    knex.schema.createTable('genes', function(table) {
+    knex.schema.createTable('genes', (table) => {
       table.increments('id').primary();
       table.integer('start');
       table.integer('end');
@@ -28,13 +28,13 @@ exports.up = function(knex, Promise) {
       table.foreign('pubmed_journal').references('journals.pubmed');
 
       table.timestamps(true, true);
-    })
-  ])
+    }),
+  ]);
 };
 
-exports.down = function(knex, Promise) {
+exports.down = function (knex, Promise) {
   return Promise.all([
     knex.schema.dropTable('genes'),
-    knex.schema.dropTable('journals')
+    knex.schema.dropTable('journals'),
   ]);
 };
