@@ -1,16 +1,8 @@
-<<<<<<< HEAD
 const express         = require('express');
 const app             = express();
 const bodyParser      = require('body-parser');
 const path            = require('path');
 const jwt             = require('jsonwebtoken');
-=======
-const express = require('express');
-
-const app = express();
-const bodyParser = require('body-parser');
-const path = require('path');
->>>>>>> em-migrations
 
 const environment     = process.env.NODE_ENV || 'development';
 const configuration   = require('../knexfile.js')[environment];
@@ -21,11 +13,7 @@ app.set('port', process.env.PORT || 6333);
 
 app.use(express.static(path.join(`${__dirname}/../public`)));
 app.use(bodyParser.json());
-<<<<<<< HEAD
-app.use(bodyParser.urlencoded( { extended: true } ));
-=======
 app.use(bodyParser.urlencoded({ extended: true }));
->>>>>>> em-migrations
 
 app.get('/', (request, response) => {
   response.sendFile(path.join(`${__dirname}/../public/index.html`));
@@ -63,12 +51,5 @@ app.get(`${routes.getAllJournals}:pubmed`, (request, response) => {
 })
 
 app.listen(app.get('port'), () => {
-<<<<<<< HEAD
-  console.log(`Server is running on ${app.get('port')}`)
-})
-
-module.exports = app;
-=======
   console.log(`Server is running on ${app.get('port')}`);
 });
->>>>>>> em-migrations
