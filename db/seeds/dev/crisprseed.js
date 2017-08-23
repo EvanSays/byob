@@ -9,7 +9,6 @@ const createJournal = (knex, journal) => {
     let genePromises = [];
 
     genes.forEach(gene => {
-      console.log(gene.pubmed == journal.pubmed)
       if (gene.pubmed === journal.pubmed) {
         genePromises.push(createGene( knex, {
           start: gene.start,

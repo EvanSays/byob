@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "csvtojson": "^1.1.7",
+    "jsonwebtoken": "^7.4.3",
     "knex": "^0.13.0",
     "pg": "^7.1.2"
   }
