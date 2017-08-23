@@ -1,20 +1,13 @@
-const express = require('express');
-const app = express();
-const bodyParser = require('body-parser');
-const path = require('path');
-const jwt = require('jsonwebtoken');
+const express         = require('express');
+const app             = express();
+const bodyParser      = require('body-parser');
+const path            = require('path');
+const jwt             = require('jsonwebtoken');
 
-const environment = process.env.NODE_ENV || 'development';
-const configuration = require('../knexfile.js')[environment];
-const db = require('knex')(configuration);
-const routes = require('./routes.js')
-
-const baseRoute       = 'http://localhost:3300/';
-const appName         = '/byob/';
-const api             = 'api/'
-const version         = 'v1/';
-const getAllJournals  = `${appName}${api}${version}journals`;
-const getAllGenes     = `${appName}${api}${version}genes`;
+const environment     = process.env.NODE_ENV || 'development';
+const configuration   = require('../knexfile.js')[environment];
+const db              = require('knex')(configuration);
+const routes          = require('./routes.js')
 
 app.set('port', process.env.PORT || 6333);
 
@@ -27,7 +20,7 @@ app.get('/', (request, response) => {
 })
 
 //=--> GET ALL JOURNALS FROM 'JOURNALS' <--=//
-app.get(getAllJournals, (request, response) => {
+app.get(routes.getAllJournals, (request, response) => {
 
   db('journals').select()
   .then(data => response.status(200).json({ data }))
