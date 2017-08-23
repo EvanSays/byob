@@ -24,7 +24,7 @@ exports.up = function(knex, Promise) {
       table.integer('effect');
       table.string('cas');
       table.string('screentype');
-      table.integer('pubmed_journal').unsigned()
+      table.integer('pubmed_journal').unsigned();
       table.foreign('pubmed_journal').references('journals.pubmed');
 
       table.timestamps(true, true);
