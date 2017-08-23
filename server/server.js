@@ -1,9 +1,8 @@
 const express = require('express');
-
-const app = express();
 const bodyParser = require('body-parser');
 const path = require('path');
 const jwt = require('jsonwebtoken');
+const app = express();
 
 const environment = process.env.NODE_ENV || 'development';
 const configuration = require('../knexfile.js')[environment];
@@ -21,14 +20,14 @@ app.get('/', (request, response) => {
 });
 
 //= --> GET ALL JOURNALS FROM 'JOURNALS' <--=//
-app.get(routes.getAllJournals, (request, response) => {
+app.get('/api/v1/journals', (request, response) => {
   db('journals').select()
     .then(data => response.status(200).json({ data }))
     .catch(error => console.log(error));
 });
 
 //= --> GET ALL GENES FROM 'GENES' <--=//
-app.get(routes.getAllGenes, (request, response) => {
+app.get('/api/v1/genes', (request, response) => {
   db('genes').select()
     .then(data => response.status(200).json({ data }))
     .catch(error => console.log(erorr));
