@@ -4,7 +4,7 @@
   "description": "",
   "main": "scripts.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "NODE_ENV=test ./node_modules/.bin/mocha",
     "lint": "./node_modules/.bin/eslint ./"
   },
   "author": "",
@@ -16,11 +16,14 @@
     "nodemon": "^1.11.0"
   },
   "dependencies": {
+    "body-parser": "^1.17.2",
+    "chai": "^4.1.1",
+    "chai-http": "^3.0.0",
     "csvtojson": "^1.1.7",
     "express": "^4.15.4",
     "jsonwebtoken": "^7.4.3",
     "knex": "^0.13.0",
-    "pg": "^7.1.2",
-    "body-parser": "^1.17.2"
+    "mocha": "^3.5.0",
+    "pg": "^7.1.2"
   }
 }
