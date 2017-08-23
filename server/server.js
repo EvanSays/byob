@@ -4,10 +4,11 @@ const path = require('path');
 const jwt = require('jsonwebtoken');
 const app = express();
 
+const routes = require('./routes.js');
+
 const environment = process.env.NODE_ENV || 'development';
 const configuration = require('../knexfile.js')[environment];
 const db = require('knex')(configuration);
-const routes = require('./routes.js');
 
 app.set('port', process.env.PORT || 6333);
 
