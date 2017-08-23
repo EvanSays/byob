@@ -14,7 +14,7 @@ exports.up = function (knex, Promise) {
       table.string('chr');
       table.string('strand');
       table.string('cellline');
-      table.string('conditions');
+      table.string('condition');
       table.string('sequence');
       table.string('symbol');
       table.string('ensg');
