@@ -5,14 +5,14 @@ const   jwt             = require('jsonwebtoken');
 const   app             = express();
 const   routes          = require('./routes.js');
 const { checkAuth }     = require('./serverMiddleware')
-
+require('dotenv').config();
 
 const environment = process.env.NODE_ENV || 'development';
 const configuration = require('../knexfile.js')[environment];
 const db = require('knex')(configuration);
 
 app.set('port', process.env.PORT || 6333);
-app.set('secretKey', routes.secretKey)
+app.set('secretKey', process.env.SECRET_KEY)
 
 app.use(express.static(path.join('../public')));
 app.use(bodyParser.json());
@@ -33,8 +33,8 @@ app.post('/api/v1/admin', (req, res, next) => {
     }
   }
 
-  if (req.body.email.endsWith('@byobAdmin.io')) {
-    Object.assign(payload, { admin: true })
+  if (req.body.email.endsWith('@turing.io')) {
+    Object.assign(payload, { admin: true });
   }
 
   var token = jwt.sign(
@@ -52,26 +52,19 @@ app.delete('/api/v1/genes/:id', checkAuth, (req, res) => {
 
   for (const requiredParameter of ['id']) {
     if (!req.params[requiredParameter]) {
-      return res.status(422).json({ error: `Missing required parameter ${requiredParameter}` })
+      return res.status(422).json({ 
+        error: `Missing required parameter ${requiredParameter}` 
+      })
     }
   }
 
   db('genes').where('id', id).del()
   .then(data => res.status(200).json({
     resp: `The id '${id}' and all it's corresponding data has been destroyed. Forever.`,
-    data: data
+    data,
   }))
   .catch(error => console.log(error))
 })
-
-
-
-
-
-
-
-
-
 
 app.route('/api/v1/journals')
   .get((req, res) => {
@@ -176,7 +169,6 @@ app.route('/api/v1/journals/:pubmed/genes')
     })
     .catch(error => res.status(500).json({ error }))
   })
-
 
 app.listen(app.get('port'), () => {
   console.log(`Server is running on ${app.get('port')}`);
