@@ -1,5 +1,5 @@
-const genes = require('../../migrations/crispr/genes.json');
-const journals = require('../../migrations/crispr/journals.json');
+const genes     = require('../../migrations/crispr/genes.json');
+const journals  = require('../../migrations/crispr/journals.json');
 
 const createJournal = (knex, journal) => knex('journals').insert({
   pubmed: journal.pubmed,
