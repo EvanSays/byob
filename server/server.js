@@ -1,10 +1,10 @@
-const   express         = require('express');
-const   bodyParser      = require('body-parser');
-const   path            = require('path');
-const   jwt             = require('jsonwebtoken');
-const   app             = express();
-const   routes          = require('./routes.js');
-const { checkAuth }     = require('./serverMiddleware')
+const   express     = require('express');
+const   bodyParser  = require('body-parser');
+const   path        = require('path');
+const   jwt         = require('jsonwebtoken');
+const   app         = express();
+const   routes      = require('./routes.js');
+const { checkAuth } = require('./serverMiddleware');
 require('dotenv').config();
 
 const environment = process.env.NODE_ENV || 'development';
@@ -12,7 +12,7 @@ const configuration = require('../knexfile.js')[environment];
 const db = require('knex')(configuration);
 
 app.set('port', process.env.PORT || 6333);
-app.set('secretKey', process.env.SECRET_KEY)
+app.set('secretKey', process.env.SECRET_KEY);
 
 app.use(express.static(path.join('../public')));
 app.use(bodyParser.json());
@@ -23,7 +23,8 @@ app.get('/', (request, res) => {
 });
 
 app.post('/api/v1/admin', (req, res, next) => {
-  const payload = req.body
+  const payload = req.body;
+  console.log('pooload: ', req.body)
 
   for (const requiredParameter of ['password', 'email']) {
     if (!req.body[requiredParameter]) {
@@ -52,8 +53,8 @@ app.delete('/api/v1/genes/:id', checkAuth, (req, res) => {
 
   for (const requiredParameter of ['id']) {
     if (!req.params[requiredParameter]) {
-      return res.status(422).json({ 
-        error: `Missing required parameter ${requiredParameter}` 
+      return res.status(422).json({
+        error: `Missing required parameter ${requiredParameter}`
       })
     }
   }
