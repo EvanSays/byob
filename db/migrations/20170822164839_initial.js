@@ -11,19 +11,20 @@ exports.up = function (knex, Promise) {
       table.increments('id').primary();
       table.integer('start');
       table.integer('end');
-      table.string('chr');
+      table.string('chr'); //?
       table.string('strand');
       table.string('cellline');
       table.string('condition');
       table.string('sequence');
       table.string('symbol');
       table.string('ensg');
-      table.decimal('log2fc');
+      table.decimal('log2fc'); //?
       table.string('rc_initial');
       table.string('rc_final');
       table.integer('effect');
       table.string('cas');
       table.string('screentype');
+
       table.integer('pubmed_journal').unsigned();
       table.foreign('pubmed_journal').references('journals.pubmed');
 
