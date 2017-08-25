@@ -20,15 +20,14 @@ const adminView = userData => {
 
 const getAdmin = data => {
 
-  fetch(`${route}api/v1/admin/`, {
+  fetch('api/v1/admin/', {
     method: "POST",
     body: JSON.stringify(data),
     headers: {
-      "data": JSON.stringify(data),
-      "ContentType": "application/json"
+      "Content-Type": "application/json"
     }
   })
-  .then(resp => resp.json(resp))
+  .then(resp => resp.json())
   .then(user => adminView(user))
   .catch(error => console.log('error at admin', error))
 }

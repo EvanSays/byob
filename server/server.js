@@ -14,7 +14,7 @@ const db = require('knex')(configuration);
 app.set('port', process.env.PORT || 6333);
 app.set('secretKey', process.env.SECRET_KEY);
 
-app.use(express.static(path.join('../public')));
+app.use(express.static(path.join('public')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -22,6 +22,32 @@ app.get('/', (request, res) => {
   res.sendFile(path.join(`${__dirname}/../index.html`));
 });
 
+app.post('/api/v1/admin', (req, res, next) => {
+  const payload = req.headers.data
+  const unStrung = JSON.parse(payload)
+
+  for (const requiredParameter of ['appName']) {
+    if (!unStrung[requiredParameter]) {
+      return res.status(422).json({
+        error: `Missing required parameter ${requiredParameter}`
+      })
+    }
+  }
+
+  if (unStrung.email.endsWith('@turing.io')) {
+    Object.assign(unStrung, { admin: true })
+  } else {
+    Object.assign(unStrung, { admin: false })
+  }
+
+  var token = jwt.sign(
+    unStrung,
+    app.get('secretKey'),
+    { expiresIn: '7d' }
+  )
+
+  res.status(200).json(unStrung)
+})
 app.post('/api/v1/admin', (req, res, next) => {
   const payload = req.headers.data
   const unStrung = JSON.parse(payload)
@@ -96,7 +122,7 @@ app.route('/api/v1/journals')
 
 app.route('/api/v1/genes')
   .get((req, res) => {
-    // CHECKS OUT
+
     db('genes').select()
       .then(data => res.status(200).json({ data }))
       .catch(error => console.log(error));
@@ -144,7 +170,7 @@ app.route('/api/v1/journals/id/:id')
   });
 
 app.route('/api/v1/journals/:pubmed/genes')
-// CHECKS OUT
+
   .get((req, res) => {
     db('genes')
       .where('pubmed_journal', req.params.pubmed)
@@ -176,3 +202,5 @@ app.route('/api/v1/journals/:pubmed/genes')
 app.listen(app.get('port'), () => {
   console.log(`Server is running on ${app.get('port')}`);
 });
+
+module.exports = app
