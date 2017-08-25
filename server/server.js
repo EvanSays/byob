@@ -6,7 +6,6 @@ const   routes          = require('./routes.js');
 const { checkAuth }     = require('./serverMiddleware');
 
 const   app             = express();
-
 require('dotenv').config();
 
 const environment = process.env.NODE_ENV || 'development';
@@ -15,8 +14,7 @@ const db = require('knex')(configuration);
 
 app.set('port', process.env.PORT || 6333);
 app.set('secretKey', process.env.SECRET_KEY);
-
-app.use(express.static(path.join('../public')));
+app.use(express.static(path.join('public')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -87,7 +85,6 @@ app.route('/api/v1/genes/:id') // WORKS
       res.status(500).json({ error });
     });
   })
-
 
 app.route('/api/v1/journals') /// WORKS
   .get((req, res) => {
@@ -177,7 +174,6 @@ app.route('/api/v1/journals/:pubmed')
     });
   })
 
-
 app.route('/api/v1/journals/:pubmed/genes') // WORKS
   .get((req, res) => {
     db('genes')
@@ -219,3 +215,5 @@ app.route('/api/v1/journals/:pubmed/genes') // WORKS
 app.listen(app.get('port'), () => {
   console.log(`Server is running on ${app.get('port')}`);
 });
+
+module.exports = app
