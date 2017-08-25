@@ -14,6 +14,7 @@ const db = require('knex')(configuration);
 
 app.set('port', process.env.PORT || 6333);
 app.set('secretKey', process.env.SECRET_KEY);
+
 app.use(express.static(path.join('public')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -24,15 +25,14 @@ app.get('/', (request, res) => {
 
 app.post('/api/v1/admin', (req, res, next) => {
   const payload = req.body;
-
-  for (const requiredParameter of ['password', 'email']) {
-    if (!req.body[requiredParameter]) {
+  for (const requiredParameter of ['appName', 'email']) {
+    if (!payload[requiredParameter]) {
       return res.status(422).json({
         error: `Missing required parameter ${requiredParameter}`
       });
     }
   }
-  if (req.body.email.endsWith('@turing.io')) {
+  if (payload.email.endsWith('@turing.io')) {
     Object.assign(payload, { admin: true })
   }
   const token = jwt.sign(payload, app.get('secretKey'), { expiresIn: '7d' });
@@ -112,6 +112,7 @@ app.route('/api/v1/journals') /// WORKS
 
 app.route('/api/v1/genes') // WORKS
   .get((req, res) => {
+    console.log(req.params);
     db('genes')
     .modify((query) => {
       if(req.query.start) {

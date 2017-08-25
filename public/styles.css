@@ -1,0 +1,62 @@
+body,
+button,
+html {
+  text-align:center;
+  font-family:'Helvetica Neue';
+}
+body,
+html {
+  margin:50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+button {
+  border:0;
+  color: chartreuse;
+  background-color: #7000ff;
+  text-transform:uppercase;
+  color:#fff;
+  padding:15px 30px;
+  margin:0 auto
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+input {
+  width: 300px;
+  font-family:'Courier New';
+  font-size: 15px;
+  border:1px solid #eee;
+  padding:20px;
+  margin:20px auto;
+  overflow-wrap:break-word
+}
+
+#key-container {
+  width: 300px;
+  overflow-wrap: break-word;
+}
+
+p {
+  font-family:'Courier New';
+  text-align: left;
+}
+
+button:hover {
+  cursor: pointer;
+  animation-direction: alternate;
+  animation-duration: 1s;
+  animation-iteration-count: 2;
+  animation-name: color_change;
+}
+
+@keyframes color_change {
+  from { background-color: #645AFF; }
+	to { background-color: #5ad5ff; }
+}
