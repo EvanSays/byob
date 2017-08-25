@@ -12,7 +12,7 @@ const adminView = userData => {
   adminPrint.append(
     `
     <h5 id="view-email">Email: ${userData.email}</h5>
-    <h5 id="view-appName">ApName: ${userData.appName}</h5>
+    <h5 id="view-appName">App Name: ${userData.appName}</h5>
     <h5 id="view-admin">Admin Status: ${userData.admin}</h5>
     `
   )

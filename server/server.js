@@ -36,6 +36,8 @@ app.post('/api/v1/admin', (req, res, next) => {
 
   if (unStrung.email.endsWith('@turing.io')) {
     Object.assign(unStrung, { admin: true })
+  } else {
+    Object.assign(unStrung, { admin: false })
   }
 
   var token = jwt.sign(
