@@ -2,9 +2,11 @@ const   express         = require('express');
 const   bodyParser      = require('body-parser');
 const   path            = require('path');
 const   jwt             = require('jsonwebtoken');
-const   app             = express();
 const   routes          = require('./routes.js');
-const { checkAuth }     = require('./serverMiddleware')
+const { checkAuth }     = require('./serverMiddleware');
+
+const   app             = express();
+
 require('dotenv').config();
 
 const environment = process.env.NODE_ENV || 'development';
@@ -12,7 +14,7 @@ const configuration = require('../knexfile.js')[environment];
 const db = require('knex')(configuration);
 
 app.set('port', process.env.PORT || 6333);
-app.set('secretKey', process.env.SECRET_KEY)
+app.set('secretKey', process.env.SECRET_KEY);
 
 app.use(express.static(path.join('../public')));
 app.use(bodyParser.json());
@@ -23,85 +25,108 @@ app.get('/', (request, res) => {
 });
 
 app.post('/api/v1/admin', (req, res, next) => {
-  const payload = req.body
+  const payload = req.body;
 
   for (const requiredParameter of ['password', 'email']) {
     if (!req.body[requiredParameter]) {
       return res.status(422).json({
         error: `Missing required parameter ${requiredParameter}`
-      })
+      });
     }
   }
-
   if (req.body.email.endsWith('@turing.io')) {
-    Object.assign(payload, { admin: true });
+    Object.assign(payload, { admin: true })
   }
-
-  var token = jwt.sign(
-    payload,
-    app.get('secretKey'),
-    { expiresIn: '7d' }
-  )
-
+  const token = jwt.sign(payload, app.get('secretKey'), { expiresIn: '7d' });
   res.status(200).json(token)
-})
+});
 
-app.delete('/api/v1/genes/:id', checkAuth, (req, res) => {
-  const payload = req.body
-  const { id } = req.params
+app.route('/api/v1/genes/:id') // WORKS
+  .get((req, res) => {
+    db('genes')
+    .where('id', req.params.id)
+    .select()
+      .then((genes) => {
+        res.status(200).json(genes);
+      })
+      .catch((error) => {
+        res.status(500).json({ error });
+      });
+  })
+  .patch( checkAuth, (req, res) => {
+    const newPatch = req.body
+    db('genes')
+    .where('id', req.params.id)
+    .select()
+    .update(newPatch, 'id')
+    .then((genes) => {
+      res.status(201).json(genes);
+    })
+    .catch((error) => {
+      res.status(500).json({ error });
+    });
+  })
+  .delete(checkAuth, (req, res) => {
+  const { id } = req.params;
 
   for (const requiredParameter of ['id']) {
     if (!req.params[requiredParameter]) {
-      return res.status(422).json({ 
-        error: `Missing required parameter ${requiredParameter}` 
+      return res.status(422).json({
+        error: `Missing required parameter ${requiredParameter}`
       })
     }
   }
+  db('genes')
+    .where('id', id)
+    .del()
+    .then(data => res.status(200).json({
+      resp: `The id '${id}' and all it's corresponding data has been destroyed. Forever.`,
+      data,
+    }))
+    .catch((error) => {
+      res.status(500).json({ error });
+    });
+  })
 
-  db('genes').where('id', id).del()
-  .then(data => res.status(200).json({
-    resp: `The id '${id}' and all it's corresponding data has been destroyed. Forever.`,
-    data,
-  }))
-  .catch(error => console.log(error))
-})
 
-app.route('/api/v1/journals')
+app.route('/api/v1/journals') /// WORKS
   .get((req, res) => {
-    // CHECKS OUT
-    db('journals').select()
-      .then(data => res.status(200).json({ data }))
-      .catch(error => console.log(error));
+    db('journals')
+    .select()
+    .then(data => res.status(200).json({ data }))
+    .catch(error => console.log(error));
   })
   .post((req, res) => {
     const newJournal = req.body;
-
-    for (const requiredParameter of ['pubmed_journal']) {
+    for (const requiredParameter of ['pubmed']) {
       if (!newJournal[requiredParameter]) {
         return res.status(422).json({ error: `Missing required parameter ${requiredParameter}` });
       }
     }
-
-    db('journals').insert(newJournal, 'id')
-      .then(journal => {
-        res.status(201).json({ id: journal[0] });
-      })
-      .catch(error => {
-        res.status(500).json({ error });
-      });
+    db('journals')
+    .insert(newJournal, 'id')
+    .then(journal => {
+      res.status(201).json({ id: journal[0] });
+    })
+    .catch(error => {
+      res.status(500).json({ error });
+    });
   });
 
-app.route('/api/v1/genes')
+app.route('/api/v1/genes') // WORKS
   .get((req, res) => {
-    // CHECKS OUT
-    db('genes').select()
-      .then(data => res.status(200).json({ data }))
-      .catch(error => console.log(error));
+    db('genes')
+    .modify((query) => {
+      if(req.query.start) {
+        query.where('start', req.query.start)
+      }
+    })
+    .select()
+    .then(data => res.status(200).json({ data }))
+    .catch(error => console.log(error));
   })
   .post((req, res) => {
-    // CHECKS OUT
     const newGene = req.body;
-
     for (const requiredParameter of [
       'start', 'end', 'strand', 'cellline',
        'condition', 'sequence', 'symbol', 'ensg',
@@ -111,7 +136,6 @@ app.route('/api/v1/genes')
         return res.status(422).json({ error: `Missing required parameter ${requiredParameter}` });
       }
     }
-
     db('genes').insert(newGene, 'id')
       .then((gene) => {
         res.status(201).json({ id: gene[0] });
@@ -121,10 +145,10 @@ app.route('/api/v1/genes')
       });
   });
 
-app.route('/api/v1/journals/id/:id')
+app.route('/api/v1/journals/:pubmed')
   .get((req, res) => {
     db('journals')
-      .where('id', req.params.id)
+      .where('pubmed', req.params.pubmed)
       .select()
       .then((journals) => {
         if (journals.length) {
@@ -138,10 +162,23 @@ app.route('/api/v1/journals/id/:id')
       .catch((error) => {
         res.status(500).json({ error });
       });
-  });
+  })
+  .patch( checkAuth,(req, res) => {
+    const newPatch = req.body
+    db('journals')
+    .where('pubmed', req.params.pubmed)
+    .select()
+    .update(newPatch, 'id')
+    .then((genes) => {
+      res.status(201).json(genes);
+    })
+    .catch((error) => {
+      res.status(500).json({ error });
+    });
+  })
 
-app.route('/api/v1/journals/:pubmed/genes')
-// CHECKS OUT
+
+app.route('/api/v1/journals/:pubmed/genes') // WORKS
   .get((req, res) => {
     db('genes')
       .where('pubmed_journal', req.params.pubmed)
@@ -158,17 +195,26 @@ app.route('/api/v1/journals/:pubmed/genes')
       .catch((error) => {
         res.status(500).json({ error });
       });
-  });
-
-  app.route('/api/v1/genes/pubmed/:pubmedID')
-    .get((req, res) => {
-
-    db('genes').where('pubmed_journal', req.params.pubmedID).select('*')
-    .then(gene => {
-      res.status(200).json({ gene })
-    })
-    .catch(error => res.status(500).json({ error }))
   })
+  // .delete(checkAuth, (req, res) => {
+  // const { pubmed } = req.params;
+  //
+  // for (const requiredParameter of ['pubmed']) {
+  //   if (!req.params[requiredParameter]) {
+  //     return res.status(422).json({
+  //       error: `Missing required parameter ${requiredParameter}`
+  //     })
+  //   }
+  // }
+  // db('genes')
+  //   .where('pubmed_journal', req.params.pubmed).del()
+  //   .then(data => res.status(200).json({
+  //     resp: `The genes '${genes}' and all it's corresponding data has been destroyed.`,
+  //     data,
+  //   }))
+  //   .catch(error => console.log(error))
+  // })
+
 
 app.listen(app.get('port'), () => {
   console.log(`Server is running on ${app.get('port')}`);
