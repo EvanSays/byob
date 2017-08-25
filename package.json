@@ -2,7 +2,7 @@
   "name": "byob",
   "version": "1.0.0",
   "description": "",
-  "main": "scripts.js",
+  "main": "main.js",
   "scripts": {
     "test": "NODE_ENV=test ./node_modules/.bin/mocha",
     "lint": "./node_modules/.bin/eslint ./"

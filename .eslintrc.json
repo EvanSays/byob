@@ -1,7 +1,10 @@
 {
     "extends": "airbnb-base",
     "rules": {
-        "treatUndefinedAsUnspecified": 0,
-        "no-restricted-syntax": ["error", "FunctionExpression", "WithStatement", "BinaryExpression[operator='in']"]
+    },
+    "env": {
+      "node": true,
+      "browser": true,
+      "mocha": true,
     }
 }
