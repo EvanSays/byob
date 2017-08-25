@@ -23,33 +23,33 @@ app.get('/', (request, res) => {
 });
 
 app.post('/api/v1/admin', (req, res, next) => {
-  const payload = req.body;
-  console.log('pooload: ', req.body)
+  const payload = req.headers.data
+  const unStrung = JSON.parse(payload)
 
-  for (const requiredParameter of ['password', 'email']) {
-    if (!req.body[requiredParameter]) {
+  for (const requiredParameter of ['appName']) {
+    if (!unStrung[requiredParameter]) {
       return res.status(422).json({
         error: `Missing required parameter ${requiredParameter}`
       })
     }
   }
 
-  if (req.body.email.endsWith('@turing.io')) {
-    Object.assign(payload, { admin: true });
+  if (unStrung.email.endsWith('@turing.io')) {
+    Object.assign(unStrung, { admin: true })
   }
 
   var token = jwt.sign(
-    payload,
+    unStrung,
     app.get('secretKey'),
     { expiresIn: '7d' }
   )
 
-  res.status(200).json(token)
+  res.status(200).json(unStrung)
 })
 
 app.delete('/api/v1/genes/:id', checkAuth, (req, res) => {
-  const payload = req.body
-  const { id } = req.params
+  const payload = req.body;
+  const { id } = req.params;
 
   for (const requiredParameter of ['id']) {
     if (!req.params[requiredParameter]) {
