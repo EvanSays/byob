@@ -6,7 +6,6 @@ const   routes          = require('./routes.js');
 const { checkAuth }     = require('./serverMiddleware');
 
 const   app             = express();
-
 require('dotenv').config();
 
 const environment = process.env.NODE_ENV || 'development';
@@ -86,7 +85,6 @@ app.route('/api/v1/genes/:id') // WORKS
       res.status(500).json({ error });
     });
   })
-
 
 app.route('/api/v1/journals') /// WORKS
   .get((req, res) => {
@@ -177,7 +175,6 @@ app.route('/api/v1/journals/:pubmed')
     });
   })
 
-
 app.route('/api/v1/journals/:pubmed/genes') // WORKS
   .get((req, res) => {
     db('genes')
@@ -219,3 +216,5 @@ app.route('/api/v1/journals/:pubmed/genes') // WORKS
 app.listen(app.get('port'), () => {
   console.log(`Server is running on ${app.get('port')}`);
 });
+
+module.exports = app
