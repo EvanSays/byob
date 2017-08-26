@@ -15,12 +15,14 @@ const checkAuth = (req, res, next) => {
         message: 'Gandalf says you shall not pass', error,
       });
     }
-    decoded.admin ?
-      next() :
-      res.status(403).json({
-        error: 'you must have admin privledges',
-      });
+    if (decoded.admin) {
+      next();
+    } else {
+      res.status(403).json({ error: 'you must have admin privledges' });
+    }
+    return null;
   });
+  return null;
 };
 
 module.exports = {
