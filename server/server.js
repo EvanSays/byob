@@ -70,7 +70,6 @@ app.route('/api/v1/journals') //  WORKS
 
 app.route('/api/v1/genes') // WORKS
   .get((req, res) => {
-    console.log(req.params);
     db('genes')
       .modify((query) => {
         if (req.query.start) {
@@ -213,7 +212,7 @@ app.route('/api/v1/genes/:id') // WORKS
       .where('id', id)
       .del()
       .then(data => res.status(200).json({
-        resp: `The id '${id}' and all it's corresponding data has been destroyed. Forever.`,
+        res: `The id '${id}' and all it's corresponding data has been destroyed. Forever.`,
         data,
       }))
       .catch((error) => {

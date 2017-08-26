@@ -60,7 +60,7 @@ describe('API Routes', () => {
         });
     });
   });
-  
+
   describe('POST api/v1/journals', () => {
     it('should not create a journal with missing data', (done) => {
       chai.request(server)
@@ -74,9 +74,8 @@ describe('API Routes', () => {
     });
   });
 
-  it.skip('GET api/v1/genes', (done) => {
+  xit('GET api/v1/genes', (done) => {
     chai.request(server)
-
       .get('/api/v1/genes')
       .end((err, response) => {
         response.should.have.status(200);
@@ -108,15 +107,68 @@ describe('API Routes', () => {
       });
   });
 
+  describe('GENES POST', () => {
+    let responseID;
+    it.only('POST api/v1/genes', (done) => {
+      chai.request(server)
+      .get('/api/v1/genes')
+      .end((err, response) => {
+        response.body.data.should.have.length(30)
+
+        chai.request(server)
+        .post('/api/v1/genes')
+        .send({
+          id: 1,
+          start: 1234,
+          end: 5678,
+          chr: 'chrString',
+          strand: 'strandSting',
+          cellline: 'celllineString',
+          condition: 'conditionString',
+          sequence: 'sequenceString',
+          symbol: 'symbolString',
+          ensg: 'ensgString',
+          log2fc: 4.9884,
+          rc_initial: 'rc_initialString',
+          rc_final: 'rc_finalString',
+          effect: 429884,
+          cas: 'casString',
+          screentype: 'screentypeString',
+          pubmed_journal: 24336569
+        })
+        .end((err, response) => {
+          response.should.have.status(201)
+          response.body.should.be.a('object')
+          response.body.should.have.property('id')
+          response.body.id.should.equal(1)
+
+          chai.request(server)
+          .get('/api/v1/genes')
+          .end((err, response) => {
+            response.should.have.status(200)
+            response.should.be.json
+            response.body.data.should.be.a('array')
+            response.body.data.should.have.length(31)
+            done()
+          })
+
+        })
+
+      })
+
+
+    })
+  })
+
   let pubmedQuery;
   let idQuery;
 
-  it.skip('should get a specified response based on id', (done) => {
+  xit('should get a specified response based on id', (done) => {
     chai.request(server)
-
       .get('/api/v1/journals/id/1')
       .end((err, response) => {
-        pubmedQuery = response.body[0].pubmed;
+        // console.log(response.body);
+        // pubmedQuery = response.body[0].pubmed;
         // response.should.have.status(200);
         // response.should.be.json;
         // response.body[0].should.have.property('id');
@@ -128,7 +180,7 @@ describe('API Routes', () => {
       });
   });
 
-  it.skip('should get a response based on the pubmed id', (done) => {
+  xit('should get a response based on the pubmed id', (done) => {
     chai.request(server)
 
       .get('/api/v1/journals/24336571/genes')
@@ -142,7 +194,7 @@ describe('API Routes', () => {
       });
   });
 
-  it.skip('should sucessfully use the id from the previous test as a query parameter', (done) => {
+  xit('should sucessfully use the id from the previous test as a query parameter', done => {
     chai.request(server)
       .get(`/api/v1/journals/id/${idQuery}`)
       .end((err, response) => {
@@ -152,7 +204,7 @@ describe('API Routes', () => {
       });
   });
 
-  it.skip('should', (done) => {
+  xit('should', (done) => {
     chai.request(server)
       .get(`/api/v1/genes/pubmed/${pubmedQuery}`)
       .end((err, response) => {
