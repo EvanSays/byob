@@ -12,9 +12,9 @@ const db = require('knex')(configuration)
 chai.use(chaiHTTP)
 
 describe('Client Routes', () => {
-  it('should return a homepage with text', done => {
-    chai.request(server)
+  it('01: should return a homepage with text', done => {
 
+    chai.request(server)
     .get('/')
     .end((err, response) => {
       response.should.have.status(200)
@@ -23,7 +23,7 @@ describe('Client Routes', () => {
     })
   })
 
-  it('should return status 404', done => {
+  it('02: should return status 404', done => {
     chai.request(server)
 
     .get('/home')
@@ -36,7 +36,7 @@ describe('Client Routes', () => {
 
 describe('API Routes', () => {
   describe('GET api/v1/journals', () => {
-    it('should', done => {
+    it('01: should get all journals', done => {
       chai.request(server)
 
       .get('/api/v1/journals')
@@ -56,9 +56,9 @@ describe('API Routes', () => {
     })
   })
 
-  it('GET api/v1/genes', done => {
-    chai.request(server)
+  it('01: GET api/v1/genes', done => {
 
+    chai.request(server)
     .get('/api/v1/genes')
     .end((err, response) => {
       response.should.have.status(200)
@@ -136,13 +136,13 @@ describe('API Routes', () => {
 
   it('should', done => {
     chai.request(server)
-    .get(`/api/v1/genes/pubmed/${pubmedQuery}`)
+    .get(`/api/v1/genes/${pubmedQuery}/pubmed`)
     .end((err, response) => {
       response.should.have.status(200)
-      response.body.gene.should.be.a('array')
-      response.body.gene[0].should.be.a('object')
-      response.body.gene[0].pubmed_journal.should.equal(pubmedQuery)
-      response.body.gene[0].id.should.equal(idQuery)
+      response.body[0].should.be.a('object')
+      response.body[0].should.be.a('object')
+      response.body[0].pubmed_journal.should.equal(pubmedQuery)
+      response.body[0].id.should.equal(idQuery)
       done()
     })
   })

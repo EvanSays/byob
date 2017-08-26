@@ -86,6 +86,24 @@ app.route('/api/v1/genes/:id') // WORKS
     });
   })
 
+app.route('/api/v1/journals/id/:id')
+  .get((req, res) => {
+    db('journals').where('id', req.params.id)
+    .select()
+    .then(journal => res.status(200).json(journal))
+    .catch(error => {
+      res.status(500).json({ error })
+    });
+  });
+
+app.route('/api/v1/genes/:pubmed/pubmed')
+  .get((req, res) => {
+    db('genes').where('pubmed_journal', req.params.pubmed)
+    .select()
+    .then(genes => res.status(200).json(genes))
+    .catch(error => res.status(500).json({ error }))
+  })
+
 app.route('/api/v1/journals') /// WORKS
   .get((req, res) => {
     db('journals')
@@ -112,7 +130,6 @@ app.route('/api/v1/journals') /// WORKS
 
 app.route('/api/v1/genes') // WORKS
   .get((req, res) => {
-    console.log(req.params);
     db('genes')
     .modify((query) => {
       if(req.query.start) {
