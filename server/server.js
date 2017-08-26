@@ -13,6 +13,7 @@ const configuration = require('../knexfile.js')[environment];
 const db = require('knex')(configuration);
 
 app.set('port', process.env.PORT || 6333);
+// app.set('secretKey', process.env.SECRET_KEY);
 app.set('secretKey', process.env.SECRET_KEY);
 
 app.use(express.static(path.join('public')));
@@ -33,14 +34,14 @@ app.post('/api/v1/admin', (req, res) => {
         error: `Missing required parameter ${param}`,
       });
     }
-    return null;
+    // return null;
   });
+
   if (payload.email.endsWith('@turing.io')) {
     Object.assign(payload, { admin: true });
   }
   const token = jwt.sign(payload, app.get('secretKey'), { expiresIn: '7d' });
-  res.status(200).json(token);
-  return null;
+  return res.status(200).json(token);
 });
 
 app.route('/api/v1/journals') //  WORKS

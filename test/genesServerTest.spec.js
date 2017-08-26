@@ -2,35 +2,32 @@ process.env.NODE_ENV = 'test';
 const chai = require('chai');
 const chaiHTTP = require('chai-http');
 const server = require('../server/server');
-
 const should = chai.should();
 
-const environment = process.env.NODE_ENV || 'development';
+const environment = process.env.NODE_ENV || 'test';
 const configuration = require('../knexfile')[environment];
 const db = require('knex')(configuration);
 
 chai.use(chaiHTTP);
 
 describe('Client Routes', () => {
-
-  it('should return a homepage with text', (done) => {
+  it('01: should return a homepage with text', (done) => {
     chai.request(server)
-      .get('/')
-      .end((err, res) => {
-        res.should.have.status(200);
-        res.should.be.html;
-        done();
-      });
+    .get('/')
+    .end((err, res) => {
+      res.should.have.status(200);
+      res.should.be.html;
+      done();
+    });
   });
 
-  it('should return status 404', (done) => {
+  it('02: should return status 404', (done) => {
     chai.request(server)
-
-      .get('/home')
-      .end((err, res) => {
-        res.should.have.status(404);
-        done();
-      });
+    .get('/home')
+    .end((err, res) => {
+      res.should.have.status(404);
+      done();
+    });
   });
 });
 
@@ -41,41 +38,9 @@ describe('API Routes', () => {
       .then(() => done());
   });
 
-  describe('GET api/v1/journals', () => {
-    it('should return all journals', (done) => {
+  describe('GET /genes', () => {
+    it('01: should get all genes from database', (done) => {
       chai.request(server)
-        .get('/api/v1/journals')
-        .end((err, res) => {
-          res.should.have.status(200);
-          res.should.be.json;
-          res.should.be.a('object');
-          res.body.should.be.a('object');
-          res.body.data.should.be.a('array');
-          res.body.data[0].should.be.a('object');
-          res.body.data[0].should.have.property('id');
-          res.body.data[0].should.have.property('pubmed');
-          res.body.data[0].should.have.property('created_at');
-          res.body.data[0].should.have.property('updated_at');
-          done();
-        });
-    });
-  });
-
-  describe('POST api/v1/journals', () => {
-    it('should not create a journal with missing data', (done) => {
-      chai.request(server)
-        .post('/api/v1/journals')
-        .send({})
-        .end((err, res) => {
-          res.should.have.status(422);
-          res.body.should.equal('Missing required parameter pubmed');
-          done();
-        });
-    });
-  });
-
-  xit('GET api/v1/genes', (done) => {
-    chai.request(server)
       .get('/api/v1/genes')
       .end((err, response) => {
         response.should.have.status(200);
@@ -105,11 +70,12 @@ describe('API Routes', () => {
         response.body.data[0].should.have.property('updated_at');
         done();
       });
+    });
   });
 
-  describe('GENES POST', () => {
-    let responseID;
-    it.only('POST api/v1/genes', (done) => {
+
+  describe('POST /genes', () => {
+    it('01: should be able to post to genes', (done) => {
       chai.request(server)
       .get('/api/v1/genes')
       .end((err, response) => {
@@ -151,69 +117,60 @@ describe('API Routes', () => {
             response.body.data.should.have.length(31)
             done()
           })
-
         })
-
       })
-
-
     })
   })
 
-  let pubmedQuery;
-  let idQuery;
 
-  xit('should get a specified response based on id', (done) => {
-    chai.request(server)
-      .get('/api/v1/journals/id/1')
-      .end((err, response) => {
-        // console.log(response.body);
-        // pubmedQuery = response.body[0].pubmed;
-        // response.should.have.status(200);
-        // response.should.be.json;
-        // response.body[0].should.have.property('id');
-        // response.body[0].id.should.equal(1);
-        // response.body[0].should.have.property('pubmed');
-        // response.body[0].should.have.property('created_at');
-        // response.body[0].should.have.property('updated_at');
-        done();
-      });
-  });
 
-  xit('should get a response based on the pubmed id', (done) => {
-    chai.request(server)
-
+  describe('GET /journals/:pubmed/genes', () => {
+    it('01: should get a gene response based on the pubmed id', (done) => {
+      chai.request(server)
       .get('/api/v1/journals/24336571/genes')
       .end((err, response) => {
-        // idQuery = response.body[0].id;
-        // response.should.have.status(200);
-        // response.body.should.be.a('array');
-        // response.body[0].should.be.a('object');
-        // response.body[0].pubmed_journal.should.equal(pubmedQuery);
+        response.should.have.status(200);
+        response.body.should.be.a('array');
+        response.body[0].should.be.a('object');
         done();
       });
+    });
   });
 
-  xit('should sucessfully use the id from the previous test as a query parameter', done => {
-    chai.request(server)
-      .get(`/api/v1/journals/id/${idQuery}`)
+  describe('POST /journals', () => {
+    it('01: should sucessfully use the id from the previous test as a query parameter', (done) => {
+      chai.request(server)
+      .post('/api/v1/journals')
+      .send({ id: 12231, pubmed: 435367 })
       .end((err, response) => {
-        response.should.have.status(200);
-        response.body[0].pubmed.should.equal(pubmedQuery);
-        done();
+        response.body.should.have.property('id');
+        response.body.id.should.equal(12231);
+
+        chai.request(server)
+        .get('/api/v1/journals/435367')
+        .end((err, response) => {
+          response.should.have.status(200);
+          response.body[0].should.have.property('id');
+          response.body[0].id.should.equal(12231);
+          done();
+        });
       });
+    });
   });
 
-  xit('should', (done) => {
-    chai.request(server)
-      .get(`/api/v1/genes/pubmed/${pubmedQuery}`)
+
+  describe('GET /journals/:pubmed/genes', () => {
+    it('01: should get genes associated with pubmed id', (done) => {
+      chai.request(server)
+      .get('/api/v1/journals/24336571/genes')
       .end((err, response) => {
         response.should.have.status(200);
-        response.body.gene.should.be.a('array');
-        response.body.gene[0].should.be.a('object');
-        response.body.gene[0].pubmed_journal.should.equal(pubmedQuery);
-        response.body.gene[0].id.should.equal(idQuery);
+        response.body.should.be.a('array');
+        response.body[0].should.be.a('object');
+        response.body[0].pubmed_journal.should.equal(24336571);
         done();
       });
+    });
   });
+
 });
