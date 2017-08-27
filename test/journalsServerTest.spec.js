@@ -24,34 +24,33 @@ describe('API Routes', () => {
       .post('/api/v1/admin')
       .send({ appName: 'Crisper', email: 'bucket@turing.io' })
       .end((err, res) => {
-        res.should.have.status(200)
-        done()
-      })
-    })
+        res.should.have.status(200);
+        done();
+      });
+    });
 
     it('02: should break when improper values (appName) are passed', (done) => {
       chai.request(server)
       .post('/api/v1/admin')
       .send({ crappName: 'Crisper', email: 'bucket@turing.io' })
       .end((err, res) => {
-        res.should.have.status(422)
+        res.should.have.status(422);
         res.body.should.equal('Missing required parameter appName')
-        done()
-      })
-    })
+        done();
+      });
+    });
 
-    it.only('03: should break when improper values (email) are passed', (done) => {
+    it('03: should break when improper values (email) are passed', (done) => {
       chai.request(server)
       .post('/api/v1/admin')
       .send({ appName: 'Crisper', emale: 'bucket@turing.io' })
       .end((err, res) => {
-        res.should.have.status(422)
+        res.should.have.status(422);
         res.body.should.equal('Missing required parameter email')
-        done()
-      })
-    })
-
-  })
+        done();
+      });
+    });
+  });
 
   describe('POST api/v1/journals', () => {
     it('01: should not create a journal with missing data', (done) => {
