@@ -4,7 +4,6 @@ process.env.NODE_ENV = 'test';
 const chai = require('chai');
 const chaiHTTP = require('chai-http');
 const server = require('../server/server');
-
 const should = chai.should();
 
 const environment = process.env.NODE_ENV || 'test';
@@ -18,6 +17,61 @@ describe('API Routes', () => {
     db.migrate.latest()
       .then(() => db.seed.run())
       .then(() => done());
+  });
+
+  describe('ADMIN', () => {
+
+    it('01: should return a jwt encrypted token', (done) => {
+      chai.request(server)
+      .post('/api/v1/admin')
+      .send({ appName: 'Crisper', email: 'bucket@turing.io' })
+      .end((err, res) => {
+        res.should.have.status(200);
+        done();
+      });
+    });
+
+    it('02: should break when improper values (appName) are passed', (done) => {
+      chai.request(server)
+      .post('/api/v1/admin')
+      .send({ crappName: 'Crisper', email: 'bucket@turing.io' })
+      .end((err, res) => {
+        res.should.have.status(422);
+        res.body.should.equal('Missing required parameter appName')
+        done();
+      });
+    });
+
+    it('03: should break when improper values (email) are passed', (done) => {
+      chai.request(server)
+      .post('/api/v1/admin')
+      .send({ appName: 'Crisper', emale: 'bucket@turing.io' })
+      .end((err, res) => {
+        res.should.have.status(422);
+        res.body.should.equal('Missing required parameter email')
+        done();
+      });
+    });
+
+    it('04: should', (done) => {
+      chai.request(server)
+      .post('/api/v1/admin')
+      .send({ appName: 'BYOB', email: 'bucket@poo.io' })
+      .end((err, res) => {
+        res.should.have.status(200)
+        let token = res.body.token
+
+        chai.request(server)
+        .patch('/api/v1/journals/435367')
+        .set({"authorization": `${token}`})
+        .send({ pubmed: 132435 })
+        .end((err, res) => {
+          res.error.text.should.equal('{"error":"you must have admin privledges"}')
+          res.should.have.status(403)
+          done()
+        });
+      });
+    });
   });
 
   describe('POST api/v1/journals', () => {

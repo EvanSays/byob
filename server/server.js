@@ -22,7 +22,7 @@ app.get('/', (request, res) => {
   res.sendFile(path.join(`${__dirname}/../index.html`));
 });
 
-app.post('/api/v1/admin', (req, res) => {
+app.post('/api/v1/admin', (req, res) => { // TESTED
   const payload = req.body;
 
   for (const requiredParam of ['appName', 'email']) {
@@ -38,7 +38,7 @@ app.post('/api/v1/admin', (req, res) => {
   return res.status(200).json({ token });
 });
 
-app.route('/api/v1/journals') //  WORKS
+app.route('/api/v1/journals') // WORKS // TESTED
   .get((req, res) => {
     db('journals')
       .select()
@@ -58,7 +58,7 @@ app.route('/api/v1/journals') //  WORKS
       .catch(error => res.status(500).json({ error }));
   });
 
-app.route('/api/v1/genes') // WORKS
+app.route('/api/v1/genes') // WORKS // TESTED
   .get((req, res) => {
     db('genes')
       .modify((query) => {
@@ -88,7 +88,7 @@ app.route('/api/v1/genes') // WORKS
       .catch(error => res.status(500).json({ error }));
   });
 
-app.route('/api/v1/journals/:pubmed')
+app.route('/api/v1/journals/:pubmed') // TESTED
   .get((req, res) => {
     db('journals')
       .where('pubmed', req.params.pubmed)
