@@ -229,7 +229,7 @@ describe('API Routes', () => {
             .set({ authorization: `${token}` })
             .end((err, res) => {
               res.should.have.status(200);
-              res.body.res.should.equal('The id \'2\' and all it\'s corresponding data has been destroyed. Forever.');
+              res.body.res.should.equal('The id "2" and all its corresponding data has been destroyed. Forever.');
               done();
             });
         });
