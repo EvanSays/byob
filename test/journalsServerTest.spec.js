@@ -37,7 +37,7 @@ describe('API Routes', () => {
       .send({ crappName: 'Crisper', email: 'bucket@turing.io' })
       .end((err, res) => {
         res.should.have.status(422);
-        res.body.should.equal('Missing required parameter appName');
+        res.body.error.should.equal('Missing required parameter appName');
         done();
       });
     });
@@ -48,7 +48,7 @@ describe('API Routes', () => {
       .send({ appName: 'Crisper', emale: 'bucket@turing.io' })
       .end((err, res) => {
         res.should.have.status(422);
-        res.body.should.equal('Missing required parameter email');
+        res.body.error.should.equal('Missing required parameter email');
         done();
       });
     });
@@ -70,6 +70,7 @@ describe('API Routes', () => {
           res.should.have.status(403);
           done();
         });
+      });
     });
   });
 
@@ -92,7 +93,8 @@ describe('API Routes', () => {
             });
         });
     });
-    it('should not add journal with missing params', (done) => {
+
+    it('02: should not add journal with missing params', (done) => {
       chai.request(server)
       .post('/api/v1/journals')
       .send({})
@@ -103,7 +105,7 @@ describe('API Routes', () => {
       });
     });
 
-    it('02: should not POST when invalid values are passes', (done) => {
+    it('03: should not POST when invalid values are passes', (done) => {
       chai.request(server)
       .post('/api/v1/journals')
       .send({ pubemed: 533665 })
@@ -113,6 +115,7 @@ describe('API Routes', () => {
         done();
       });
     });
+
   });
 
   describe('GET /journals', () => {
@@ -133,6 +136,7 @@ describe('API Routes', () => {
           done();
         });
     });
+
   });
 
   describe('POST /journals', () => {
@@ -170,13 +174,13 @@ describe('API Routes', () => {
             .post('/api/v1/admin')
             .send({ appName: 'Crisper', email: 'bucket@turing.io' })
             .end((err, res) => {
-              const token = res.body;
+              const token = res.body.token;
               chai.request(server)
                 .patch('/api/v1/journals/435367')
                 .set({ authorization: `${token}` })
                 .send({ pubmed: 132435 })
                 .end((err, res) => {
-                  res.body.should.deep.equal([12231]);
+                  res.body.id.should.deep.equal([12231]);
                   done();
                 });
             });
@@ -207,6 +211,10 @@ describe('API Routes', () => {
             done();
           });
         });
+      });
     });
+
   });
+
+
 });
