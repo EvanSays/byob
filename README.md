@@ -28,4 +28,4 @@ The API is REST API and uses JWT for authentication purposes. The return format 
 - **[<code>DELETE</code> genes/:id]()** +
 
 ## Authentication
-- **[<code>POST</code> admin]()** +
+- **[<code>POST</code> admin](https://github.com/EvanSays/byob/blob/master/docs/Auth.md)** +
