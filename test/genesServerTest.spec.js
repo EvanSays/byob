@@ -122,7 +122,6 @@ describe('API Routes', () => {
     })
   })
 
-
   describe('GET /journals/:pubmed/genes', () => {
     it('01: should get a gene response based on the pubmed id', (done) => {
       chai.request(server)
