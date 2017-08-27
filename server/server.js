@@ -24,16 +24,12 @@ app.get('/', (request, res) => {
 
 app.post('/api/v1/admin', (req, res) => {
   const payload = req.body;
-  const params = ['appName', 'email'];
 
-  params.forEach((param) => {
-    if (!payload[param]) {
-      return res.status(422).json({
-        error: `Missing required parameter ${param}`,
-      });
+  for (const requiredParam of ['appName', 'email']) {
+    if (!req.body[requiredParam]) {
+      return res.status(422).json(`Missing required parameter ${requiredParam}`);
     }
-    return res.status(500).json();
-  });
+  }
 
   if (payload.email.endsWith('@turing.io')) {
     Object.assign(payload, { admin: true });
@@ -47,7 +43,7 @@ app.route('/api/v1/journals') //  WORKS
     db('journals')
       .select()
       .then(data => res.status(200).json({ data }))
-      .catch(error => console.log(error));
+      .catch(error => res.status(500).json({ error }));
   })
   .post((req, res) => {
     const newJournal = req.body;
@@ -56,15 +52,10 @@ app.route('/api/v1/journals') //  WORKS
         return res.status(422).json(`Missing required parameter ${requiredParam}`);
       }
     }
-    db('journals')
+    return db('journals')
       .insert(newJournal, 'id')
-      .then((journal) => {
-        res.status(201).json({ id: journal[0] });
-      })
-      .catch((error) => {
-        res.status(500).json({ error });
-      });
-    return null;
+      .then(journal => res.status(201).json({ id: journal[0] }))
+      .catch(error => res.status(500).json({ error }));
   });
 
 app.route('/api/v1/genes') // WORKS
@@ -77,7 +68,7 @@ app.route('/api/v1/genes') // WORKS
       })
       .select()
       .then(data => res.status(200).json({ data }))
-      .catch(error => console.log(error));
+      .catch(error => res.status(500).json({ error }));
   })
   .post((req, res) => {
     const newGene = req.body;
@@ -87,19 +78,14 @@ app.route('/api/v1/genes') // WORKS
       'log2fc', 'rc_initial', 'rc_final', 'effect',
       'cas', 'screentype', 'pubmed_journal'];
 
-    params.forEach((param) => {
-      if (!newGene[param]) {
-        return res.status(422).json({ error: `Missing required parameter ${param}` });
+    for (const requiredParam of params) {
+      if (!req.body[requiredParam]) {
+        return res.status(422).json(`Missing required parameter ${requiredParam}`);
       }
-      return null;
-    });
-    db('genes').insert(newGene, 'id')
-      .then((gene) => {
-        res.status(201).json({ id: gene[0] });
-      })
-      .catch((error) => {
-        res.status(500).json({ error });
-      });
+    }
+    return db('genes').insert(newGene, 'id')
+      .then(gene => res.status(201).json({ id: gene[0] }))
+      .catch(error => res.status(500).json({ error }));
   });
 
 app.route('/api/v1/journals/:pubmed')
@@ -109,16 +95,14 @@ app.route('/api/v1/journals/:pubmed')
       .select()
       .then((journals) => {
         if (journals.length) {
-          res.status(200).json(journals);
+          res.status(200).json({ journals });
         } else {
           res.status(404).json({
             error: `Could not find journal with pubmed id of ${req.params.pubmed}`,
           });
         }
       })
-      .catch((error) => {
-        res.status(500).json({ error });
-      });
+      .catch(error => res.status(500).json({ error }));
   })
   .patch(checkAuth, (req, res) => {
     const newPatch = req.body;
@@ -129,9 +113,7 @@ app.route('/api/v1/journals/:pubmed')
       .then((genes) => {
         res.status(201).json({ id: genes });
       })
-      .catch((error) => {
-        res.status(500).json({ error });
-      });
+      .catch(error => res.status(500).json({ error }));
   });
 
 app.route('/api/v1/journals/:pubmed/genes') // WORKS
@@ -142,16 +124,14 @@ app.route('/api/v1/journals/:pubmed/genes') // WORKS
       .select()
       .then((genes) => {
         if (genes.length) {
-          res.status(200).json(genes);
+          res.status(200).json({ genes });
         } else {
           res.status(404).json({
             error: `Could not find genes with pubmed id of ${pubmed}`,
           });
         }
       })
-      .catch((error) => {
-        res.status(500).json({ error });
-      });
+      .catch(error => res.status(500).json({ error }));
   })
   .delete(checkAuth, (req, res) => {
     const { pubmed } = req.params;
@@ -163,15 +143,14 @@ app.route('/api/v1/journals/:pubmed/genes') // WORKS
         });
       }
     }
-    db('genes')
+    return db('genes')
       .where('pubmed_journal', pubmed)
       .del()
       .then(data => res.status(200).json({
         res: `The genes linked to '${pubmed}' and all it's corresponding data has been destroyed.`,
         data,
       }))
-      .catch(error => console.log(error));
-    return null;
+      .catch(error => res.status(500).json({ error }));
   });
 
 app.route('/api/v1/genes/:id') // WORKS
@@ -179,12 +158,8 @@ app.route('/api/v1/genes/:id') // WORKS
     db('genes')
       .where('id', req.params.id)
       .select()
-      .then((genes) => {
-        res.status(200).json(genes);
-      })
-      .catch((error) => {
-        res.status(500).json({ error });
-      });
+      .then(genes => res.status(200).json(genes))
+      .catch(error => res.status(500).json({ error }));
   })
   .patch(checkAuth, (req, res) => {
     const newPatch = req.body;
@@ -192,12 +167,8 @@ app.route('/api/v1/genes/:id') // WORKS
       .where('id', req.params.id)
       .select()
       .update(newPatch, 'id')
-      .then((genes) => {
-        res.status(201).json(genes);
-      })
-      .catch((error) => {
-        res.status(500).json({ error });
-      });
+      .then(genes => res.status(201).json(genes))
+      .catch(error => res.status(500).json({ error }));
   })
   .delete(checkAuth, (req, res) => {
     const { id } = req.params;
@@ -208,17 +179,14 @@ app.route('/api/v1/genes/:id') // WORKS
         });
       }
     }
-    db('genes')
+    return db('genes')
       .where('id', id)
       .del()
       .then(data => res.status(200).json({
         res: `The id '${id}' and all it's corresponding data has been destroyed. Forever.`,
         data,
       }))
-      .catch((error) => {
-        res.status(500).json({ error });
-      });
-    return null;
+      .catch(error => res.status(500).json({ error }));
   });
 
 app.listen(app.get('port'), () => {
