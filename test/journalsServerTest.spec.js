@@ -50,6 +50,26 @@ describe('API Routes', () => {
         done();
       });
     });
+
+    it('04: should', (done) => {
+      chai.request(server)
+      .post('/api/v1/admin')
+      .send({ appName: 'BYOB', email: 'bucket@poo.io' })
+      .end((err, res) => {
+        res.should.have.status(200)
+        let token = res.body.token
+
+        chai.request(server)
+        .patch('/api/v1/journals/435367')
+        .set({"authorization": `${token}`})
+        .send({ pubmed: 132435 })
+        .end((err, res) => {
+          res.error.text.should.equal('{"error":"you must have admin privledges"}')
+          res.should.have.status(403)
+          done()
+        });
+      });
+    });
   });
 
   describe('POST api/v1/journals', () => {
