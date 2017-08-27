@@ -22,18 +22,15 @@ app.get('/', (request, res) => {
   res.sendFile(path.join(`${__dirname}/../index.html`));
 });
 
-app.post('/api/v1/admin', (req, res) => {
+app.post('/api/v1/admin', (req, res) => { // TESTED
   const payload = req.body;
   const params = ['appName', 'email'];
 
-  params.forEach((param) => {
-    if (!payload[param]) {
-      return res.status(422).json({
-        error: `Missing required parameter ${param}`,
-      });
+  for (const requiredParam of ['appName', 'email']) {
+    if (!req.body[requiredParam]) {
+      return res.status(422).json(`Missing required parameter ${requiredParam}`);
     }
-    return res.status(500).json();
-  });
+  }
 
   if (payload.email.endsWith('@turing.io')) {
     Object.assign(payload, { admin: true });
@@ -42,7 +39,7 @@ app.post('/api/v1/admin', (req, res) => {
   return res.status(200).json({ token });
 });
 
-app.route('/api/v1/journals') //  WORKS
+app.route('/api/v1/journals') // WORKS // TESTED
   .get((req, res) => {
     db('journals')
       .select()
@@ -67,7 +64,7 @@ app.route('/api/v1/journals') //  WORKS
     return null;
   });
 
-app.route('/api/v1/genes') // WORKS
+app.route('/api/v1/genes') // WORKS // TESTED
   .get((req, res) => {
     db('genes')
       .modify((query) => {
@@ -102,7 +99,7 @@ app.route('/api/v1/genes') // WORKS
       });
   });
 
-app.route('/api/v1/journals/:pubmed')
+app.route('/api/v1/journals/:pubmed') // TESTED
   .get((req, res) => {
     db('journals')
       .where('pubmed', req.params.pubmed)
