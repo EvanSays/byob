@@ -32,7 +32,7 @@ app.post('/api/v1/admin', (req, res) => { // TESTED
   }
   if (payload.email.endsWith('@turing.io')) {
     Object.assign(payload, { admin: true });
-  } else { Object.assign(payload, { admin: false }) }
+  } else { Object.assign(payload, { admin: false }); }
   const token = jwt.sign(payload, app.get('secretKey'), { expiresIn: '7d' });
   return res.status(200).json({ token });
 });
