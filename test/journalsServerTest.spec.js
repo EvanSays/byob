@@ -17,7 +17,7 @@ describe('API Routes', () => {
       .then(() => done());
   });
 
-  describe('ADMIN', () => {
+  describe('ADMIN', () => { // GOOD
 
     it('01: should return a jwt encrypted token', (done) => {
       chai.request(server)
@@ -64,7 +64,7 @@ describe('API Routes', () => {
         .set({"authorization": `${token}`})
         .send({ pubmed: 132435 })
         .end((err, res) => {
-          res.error.text.should.equal('{"error":"Your admin stats is set to false. It muse be set to true to proceed"}')
+          res.error.text.should.equal('{"error":"Your admin stats is set to false. It must be set to true to proceed"}')
           res.should.have.status(403)
           done()
         });
@@ -79,10 +79,21 @@ describe('API Routes', () => {
       .send({})
       .end((err, res) => {
         res.should.have.status(422);
-        res.body.should.equal('Missing required parameter pubmed');
+        res.body.should.equal("Missing required parameter pubmed. Instead recieved ''.");
         done();
       });
     });
+
+    it('02: should not POST when invalid values are passes', (done) => {
+      chai.request(server)
+      .post('/api/v1/journals')
+      .send({ pubemed: 533665 })
+      .end((err, res) => {
+        res.should.have.status(422)
+        res.body.should.equal("Missing required parameter pubmed. Instead recieved 'pubemed'.")
+        done()
+      })
+    })
   });
 
 

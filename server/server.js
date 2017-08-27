@@ -27,13 +27,11 @@ app.get('/', (request, res) => {
 app.post('/api/v1/admin', (req, res) => { // TESTED
   const payload = req.body;
   const params = ['appName', 'email'];
-
   for (const requiredParam of ['appName', 'email']) {
     if (!req.body[requiredParam]) {
       return res.status(422).json(`Missing required parameter ${requiredParam}`);
     }
   }
-
   if (payload.email.endsWith('@turing.io')) {
     Object.assign(payload, { admin: true });
   } else { Object.assign(payload, { admin: false }) }
@@ -52,7 +50,7 @@ app.route('/api/v1/journals') // WORKS // TESTED
     const newJournal = req.body;
     for (const requiredParam of ['pubmed']) {
       if (!req.body[requiredParam]) {
-        return res.status(422).json(`Missing required parameter ${requiredParam}`);
+        return res.status(422).json(`Missing required parameter ${requiredParam}. Instead recieved '${Object.keys(req.body)}'.`);
       }
     }
     db('journals')
