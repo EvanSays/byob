@@ -1,7 +1,10 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-unused-expressions */
 process.env.NODE_ENV = 'test';
 const chai = require('chai');
 const chaiHTTP = require('chai-http');
 const server = require('../server/server');
+
 const should = chai.should();
 
 const environment = process.env.NODE_ENV || 'test';
@@ -17,16 +20,15 @@ describe('API Routes', () => {
       .then(() => done());
   });
 
-  describe('ADMIN', () => { // GOOD
-
+  describe('POST /admin', () => {
     it('01: should return a jwt encrypted token', (done) => {
       chai.request(server)
-      .post('/api/v1/admin')
-      .send({ appName: 'Crisper', email: 'bucket@turing.io' })
-      .end((err, res) => {
-        res.should.have.status(200);
-        done();
-      });
+        .post('/api/v1/admin')
+        .send({ appName: 'Crisper', email: 'bucket@turing.io' })
+        .end((err, res) => {
+          res.should.have.status(200);
+          done();
+        });
     });
 
     it('02: should break when improper values (appName) are passed', (done) => {
@@ -68,12 +70,29 @@ describe('API Routes', () => {
           res.should.have.status(403);
           done();
         });
-      });
     });
   });
 
-  describe('POST api/v1/journals', () => {
-    it('01: should not create a journal with missing data', (done) => {
+  describe('POST /journals', () => {
+    it('01: should add journal', (done) => {
+      chai.request(server)
+        .post('/api/v1/journals')
+        .send({ id: 12231, pubmed: 435367 })
+        .end((err, res) => {
+          res.body.should.have.property('id');
+          res.body.id.should.equal(12231);
+
+          chai.request(server)
+            .get('/api/v1/journals/435367')
+            .end((err, res) => {
+              res.should.have.status(200);
+              res.body[0].should.have.property('id');
+              res.body[0].id.should.equal(12231);
+              done();
+            });
+        });
+    });
+    it('should not add journal with missing params', (done) => {
       chai.request(server)
       .post('/api/v1/journals')
       .send({})
@@ -96,24 +115,23 @@ describe('API Routes', () => {
     });
   });
 
-
   describe('GET /journals', () => {
     it('01: should return all journals', (done) => {
       chai.request(server)
-      .get('/api/v1/journals')
-      .end((err, res) => {
-        res.should.have.status(200);
-        res.should.be.json;
-        res.should.be.a('object');
-        res.body.should.be.a('object');
-        res.body.data.should.be.a('array');
-        res.body.data[0].should.be.a('object');
-        res.body.data[0].should.have.property('id');
-        res.body.data[0].should.have.property('pubmed');
-        res.body.data[0].should.have.property('created_at');
-        res.body.data[0].should.have.property('updated_at');
-        done();
-      });
+        .get('/api/v1/journals')
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.should.be.json;
+          res.should.be.a('object');
+          res.body.should.be.a('object');
+          res.body.data.should.be.a('array');
+          res.body.data[0].should.be.a('object');
+          res.body.data[0].should.have.property('id');
+          res.body.data[0].should.have.property('pubmed');
+          res.body.data[0].should.have.property('created_at');
+          res.body.data[0].should.have.property('updated_at');
+          done();
+        });
     });
   });
 
@@ -143,29 +161,26 @@ describe('API Routes', () => {
 
     it('02: should require admin priveledges to update journals', (done) => {
       chai.request(server)
-      .post('/api/v1/journals')
-      .send({id: 12231, pubmed: 435367})
-      .end((err, response) => {
-        response.body.should.have.property('id');
-        response.body.id.should.equal(12231);
-
-        chai.request(server)
-        .post('/api/v1/admin')
-        .send({ appName: 'Crisper', email: 'bucket@turing.io' })
+        .post('/api/v1/journals')
+        .send({ id: 12231, pubmed: 435367 })
         .end((err, res) => {
-          response.should.have.status(201);
-          let token = res.body.token;
-
+          res.body.should.have.property('id');
+          res.body.id.should.equal(12231);
           chai.request(server)
-          .patch('/api/v1/journals/435367')
-          .set({"authorization": `${token}`})
-          .send({ pubmed: 132435 })
-          .end((err, res) => {
-            response.body.id.should.deep.equal(12231);
-            done();
-          });
+            .post('/api/v1/admin')
+            .send({ appName: 'Crisper', email: 'bucket@turing.io' })
+            .end((err, res) => {
+              const token = res.body;
+              chai.request(server)
+                .patch('/api/v1/journals/435367')
+                .set({ authorization: `${token}` })
+                .send({ pubmed: 132435 })
+                .end((err, res) => {
+                  res.body.should.deep.equal([12231]);
+                  done();
+                });
+            });
         });
-      });
     });
 
     it('should be denied update priveledges if admin is set to false', (done) => {
@@ -192,7 +207,6 @@ describe('API Routes', () => {
             done();
           });
         });
-      });
     });
   });
 });
