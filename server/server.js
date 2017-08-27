@@ -2,7 +2,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const jwt = require('jsonwebtoken');
-// const routes = require('./routes.js');
 const { checkAuth } = require('./serverMiddleware');
 
 const app = express();
@@ -13,7 +12,6 @@ const configuration = require('../knexfile.js')[environment];
 const db = require('knex')(configuration);
 
 app.set('port', process.env.PORT || 6333);
-// app.set('secretKey', process.env.SECRET_KEY);
 app.set('secretKey', process.env.SECRET_KEY);
 
 app.use(express.static(path.join('public')));
@@ -38,7 +36,7 @@ app.post('/api/v1/admin', (req, res) => { // TESTED
     Object.assign(payload, { admin: true });
   }
   const token = jwt.sign(payload, app.get('secretKey'), { expiresIn: '7d' });
-  return res.status(200).json({token: token});
+  return res.status(200).json({ token });
 });
 
 app.route('/api/v1/journals') // WORKS // TESTED
