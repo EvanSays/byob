@@ -2,7 +2,6 @@ process.env.NODE_ENV = 'test';
 const chai = require('chai');
 const chaiHTTP = require('chai-http');
 const server = require('../server/server');
-
 const should = chai.should();
 
 const environment = process.env.NODE_ENV || 'test';
@@ -17,6 +16,19 @@ describe('API Routes', () => {
       .then(() => db.seed.run())
       .then(() => done());
   });
+
+  describe('ADMIN', () => {
+
+    it('01: should return a jwt encrypted token', (done) => {
+      chai.request(server)
+      .post('/api/v1/admin')
+      .send({ appName: 'Crisper', email: 'bucket@turing.io' })
+      .end((err, res) => {
+        res.should.have.status(200)
+        done()
+      })
+    })
+  })
 
   describe('POST api/v1/journals', () => {
     it('01: should not create a journal with missing data', (done) => {
@@ -62,15 +74,15 @@ describe('API Routes', () => {
         chai.request(server)
         .post('/api/v1/admin')
         .send({ appName: 'Crisper', email: 'bucket@turing.io' })
-        .end((err, response) => {
-          let token = response.body
+        .end((err, res) => {
+          let token = res.body.token
 
           chai.request(server)
           .patch('/api/v1/journals/435367')
           .set({"authorization": `${token}`})
           .send({ pubmed: 132435 })
-          .end((err, response) => {
-            response.body.should.deep.equal([12231])
+          .end((err, res) => {
+            response.body.id.should.deep.equal(12231)
             done()
           });
         });
