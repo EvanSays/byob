@@ -64,7 +64,7 @@ describe('API Routes', () => {
         .set({"authorization": `${token}`})
         .send({ pubmed: 132435 })
         .end((err, res) => {
-          res.error.text.should.equal('{"error":"you must have admin privledges"}')
+          res.error.text.should.equal('{"error":"Your admin stats is set to false. It muse be set to true to proceed"}')
           res.should.have.status(403)
           done()
         });
