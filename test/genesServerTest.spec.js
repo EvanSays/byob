@@ -216,7 +216,41 @@ describe('API Routes', () => {
         });
     });
   });
-
+  describe('DELETE /genes/:id', () => {
+    it('should delete all data pertaining to the id entered in the params', (done) => {
+      chai.request(server)
+        .post('/api/v1/admin')
+        .send({ appName: 'Crisper', email: 'bucket@turing.io' })
+        .end((err, res) => {
+          res.should.have.status(200)
+          const token = res.body.token;
+          chai.request(server)
+            .delete('/api/v1/genes/2')
+            .set({ authorization: `${token}` })
+            .end((err, res) => {
+              res.should.have.status(200);
+              res.body.res.should.equal('The id \'2\' and all it\'s corresponding data has been destroyed. Forever.');
+              done();
+            });
+        });
+    });
+    it('should not delete if required params are incorrrect', (done) => {
+      chai.request(server)
+        .post('/api/v1/admin')
+        .send({ appName: 'Crisper', email: 'bucket@turing.io' })
+        .end((err, res) => {
+          res.should.have.status(200)
+          const token = res.body.token;
+          chai.request(server)
+            .delete('/api/v1/genes/two')
+            .set({ authorization: `${token}` })
+            .end((err, res) => {
+              res.should.have.status(500);
+              done();
+            });
+        });
+    });
+  });
   describe('PATCH /genes/:id', () => {
     it('should update a gene', (done) => {
       chai.request(server)
