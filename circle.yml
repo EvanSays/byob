@@ -15,4 +15,5 @@ machine:
 
   test:
     override:
-      - ./node_modules/.bin/mocha
+      - npm run lint
+      - npm run test

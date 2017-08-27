@@ -1,5 +1,5 @@
-const genes     = require('../../migrations/crispr/genes.json');
-const journals  = require('../../migrations/crispr/journals.json');
+const genes = require('../../migrations/crispr/genes.json');
+const journals = require('../../migrations/crispr/journals.json');
 
 const createJournal = (knex, journal) => knex('journals').insert({
   pubmed: journal.pubmed,
@@ -34,14 +34,17 @@ const createJournal = (knex, journal) => knex('journals').insert({
 
 const createGene = (knex, gene) => knex('genes').insert(gene);
 
-exports.seed = (knex, Promise) => knex('genes').del()
-  .then(() => knex('journals').del())
-  .then(() => {
-    const journalPromises = [];
-
-    journals.forEach((journal) => {
-      journalPromises.push(createJournal(knex, journal));
-    });
-    return Promise.all(journalPromises);
-  })
-  .catch(error => console.log(`error seeding data: ${error}`));
+exports.seed = (knex, Promise) => {
+  return knex('genes').del()
+    .then(() => knex('journals').del())
+    .then(() => {
+      const journalPromises = [];
+  
+      journals.forEach((journal) => {
+        journalPromises.push(createJournal(knex, journal));
+      });
+      return Promise.all(journalPromises);
+    })
+    .then(() => console.log('Re-seed complete!'))
+    .catch((error) => console.log(`Error seeding data: ${error}`))
+};
