@@ -23,7 +23,7 @@ The API is REST API and uses JWT for authentication purposes. The return format 
 
 - **[<code>GET</code> genes](https://github.com/EvanSays/byob/blob/master/docs/GET_genes.md)** +
 - **[<code>POST</code> genes](https://github.com/EvanSays/byob/blob/master/docs/GET_genes_id.md)** +
-- **[<code>GET</code> genes/:id](https://github.com/EvanSays/byob/blob/master/docs/GET_genes_id.md)** +
+- **[<code>GET</code> genes/:id](https://github.com/EvanSays/byob/blob/master/docs/GET_genes.md)** +
 - **[<code>PATCH</code> genes/:id](https://github.com/EvanSays/byob/blob/master/docs/PATCH_genes_id.md)** +
 - **[<code>DELETE</code> genes/:id](https://github.com/EvanSays/byob/blob/master/docs/DELETE_genes_id.md)** +
 
