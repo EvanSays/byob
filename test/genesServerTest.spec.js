@@ -123,6 +123,35 @@ describe('API Routes', () => {
             });
         });
     });
+    it('should not create gene with missing data', (done) => {
+      chai.request(server)
+        .post('/api/v1/genes')
+        .send({
+          id: 1,
+          start: 1234,
+          end: 5678,
+          chr: 'chrString',
+          cellline: 'celllineString',
+          condition: 'conditionString',
+          sequence: 'sequenceString',
+          symbol: 'symbolString',
+          ensg: 'ensgString',
+          log2fc: 4.9884,
+          rc_initial: 'rc_initialString',
+          rc_final: 'rc_finalString',
+          effect: 429884,
+          cas: 'casString',
+          screentype: 'screentypeString',
+          pubmed_journal: 24336569,
+        })
+        .end((err, res) => {
+          res.should.have.status(422);
+          res.body.should.be.a('object');
+          res.body.should.have.property('error');
+          res.body.error.should.equal('Missing required parameter strand');
+          done();
+        });
+    });
   });
 
 
@@ -136,6 +165,31 @@ describe('API Routes', () => {
           res.body[0].should.be.a('object');
           done();
         });
+    });
+    it('should not get genes with wrong pubmed id', (done) => {
+      chai.request(server)
+        .get('/api/v1/journals/24336341/genes')
+        .end((err, res) => {
+          res.should.have.status(404);
+          res.body.should.be.a('object');
+          res.body.should.have.property('error');
+          res.body.error.should.equal('Could not find genes with pubmed id of 24336341');
+          done();
+        });
+    });
+  });
+
+  describe('DELETE /journals/:pubmed/genes', () => {
+    it.only('should remove genes', () => {
+      chai.request(server)
+        .post('/api/v1/admin')
+        .send({ appName: 'Crisper', email: 'bucket@turing.io' })
+        .end((err, res) => {
+          chai.request(server)
+            .post('/journals/:pubmed/genes')
+        });
+        // .delete('/api/v1/journals/:pubmed/genes')
+
     });
   });
 

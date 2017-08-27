@@ -57,20 +57,20 @@ describe('API Routes', () => {
       chai.request(server)
         .post('/api/v1/journals')
         .send({ id: 12231, pubmed: 435367 })
-        .end((err, response) => {
-          response.body.should.have.property('id');
-          response.body.id.should.equal(12231);
+        .end((err, res) => {
+          res.body.should.have.property('id');
+          res.body.id.should.equal(12231);
           chai.request(server)
             .post('/api/v1/admin')
             .send({ appName: 'Crisper', email: 'bucket@turing.io' })
-            .end((err, response) => {
-              const token = response.body;
+            .end((err, res) => {
+              const token = res.body;
               chai.request(server)
                 .patch('/api/v1/journals/435367')
                 .set({ authorization: `${token}` })
                 .send({ pubmed: 132435 })
-                .end((err, response) => {
-                  response.body.should.deep.equal([12231]);
+                .end((err, res) => {
+                  res.body.should.deep.equal([12231]);
                   done();
                 });
             });

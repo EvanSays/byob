@@ -27,7 +27,7 @@ app.post('/api/v1/admin', (req, res) => {
 
   for (const requiredParam of ['appName', 'email']) {
     if (!req.body[requiredParam]) {
-      return res.status(422).json(`Missing required parameter ${requiredParam}`);
+      return res.status(422).json({ error: `Missing required parameter ${requiredParam}` });
     }
   }
 
@@ -49,7 +49,7 @@ app.route('/api/v1/journals') //  WORKS
     const newJournal = req.body;
     for (const requiredParam of ['pubmed']) {
       if (!req.body[requiredParam]) {
-        return res.status(422).json(`Missing required parameter ${requiredParam}`);
+        return res.status(422).json({ error: `Missing required parameter, ${requiredParam}` });
       }
     }
     return db('journals')
@@ -80,7 +80,7 @@ app.route('/api/v1/genes') // WORKS
 
     for (const requiredParam of params) {
       if (!req.body[requiredParam]) {
-        return res.status(422).json(`Missing required parameter ${requiredParam}`);
+        return res.status(422).json({ error: `Missing required parameter ${requiredParam}` });
       }
     }
     return db('genes').insert(newGene, 'id')
