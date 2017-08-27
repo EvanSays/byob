@@ -22,7 +22,7 @@ app.get('/', (request, res) => {
   res.sendFile(path.join(`${__dirname}/../index.html`));
 });
 
-app.post('/api/v1/admin', (req, res) => { // TESTED
+app.post('/api/v1/admin', (req, res) => {
   const payload = req.body;
 
   for (const requiredParam of ['appName', 'email']) {
@@ -37,14 +37,14 @@ app.post('/api/v1/admin', (req, res) => { // TESTED
   return res.status(200).json({ token });
 });
 
-app.route('/api/v1/journals') // WORKS
-  .get((req, res) => { // TESTED
+app.route('/api/v1/journals')
+  .get((req, res) => {
     db('journals')
       .select()
       .then(data => res.status(200).json({ data }))
       .catch(error => res.status(500).json({ error }));
   })
-  .post((req, res) => { // TESTED
+  .post((req, res) => {
     const newJournal = req.body;
     for (const requiredParam of ['pubmed']) {
       if (!req.body[requiredParam]) {
@@ -57,7 +57,7 @@ app.route('/api/v1/journals') // WORKS
       .catch(error => res.status(500).json({ error }));
   });
 
-app.route('/api/v1/genes') // WORKS // TESTED
+app.route('/api/v1/genes')
   .get((req, res) => {
     db('genes')
       .modify((query) => {
@@ -96,7 +96,7 @@ app.route('/api/v1/genes') // WORKS // TESTED
       .catch(error => res.status(500).json({ error }));
   });
 
-app.route('/api/v1/journals/:pubmed') // TESTED
+app.route('/api/v1/journals/:pubmed')
   .get((req, res) => {
     db('journals')
       .where('pubmed', req.params.pubmed)
@@ -124,7 +124,7 @@ app.route('/api/v1/journals/:pubmed') // TESTED
       .catch(error => res.status(500).json({ error }));
   });
 
-app.route('/api/v1/journals/:pubmed/genes') // WORKS
+app.route('/api/v1/journals/:pubmed/genes')
   .get((req, res) => {
     const { pubmed } = req.params;
     db('genes')
@@ -160,7 +160,7 @@ app.route('/api/v1/journals/:pubmed/genes') // WORKS
       .catch(error => res.status(500).json({ error }));
   });
 
-app.route('/api/v1/genes/:id') // WORKS
+app.route('/api/v1/genes/:id')
   .get((req, res) => {
     db('genes')
       .where('id', req.params.id)
