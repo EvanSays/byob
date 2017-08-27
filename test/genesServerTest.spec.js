@@ -381,4 +381,29 @@ describe('API Routes', () => {
         });
     });
   });
+  describe('QUERY genes', () => {
+    it('should search by query', (done) => {
+      chai.request(server)
+        .get('/api/v1/genes')
+        .end((req, res) => {
+          res.body.data.should.have.length(30);
+          chai.request(server)
+            .get('/api/v1/genes?cellline=A375')
+            .end((req, res) => {
+              res.should.have.status(200);
+              res.body.data.should.have.length(4);
+              done();
+            });
+        });
+    });
+    it('should not return a wrong query', (done) => {
+      chai.request(server)
+        .get('/api/v1/genes?wrong=query')
+        .end((req, res) => {
+          res.should.have.status(200);
+          res.body.data.should.have.length(30);
+          done();
+        });
+    });
+  });
 });
