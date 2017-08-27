@@ -12,7 +12,8 @@ const checkAuth = (req, res, next) => {
   jwt.verify(tokenPiece, process.env.SECRET_KEY, (error, decoded) => {
     if (error) {
       return res.status(403).json({
-        message: 'Gandalf says you shall not pass', error
+        message: 'Gandalf says you shall not pass',
+        error,
       });
     }
     if (decoded.admin) {

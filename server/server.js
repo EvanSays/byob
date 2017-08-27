@@ -27,7 +27,7 @@ app.post('/api/v1/admin', (req, res) => { // TESTED
 
   for (const requiredParam of ['appName', 'email']) {
     if (!req.body[requiredParam]) {
-      return res.status(422).json(`Missing required parameter ${requiredParam}`);
+      return res.status(422).json({ error: `Missing required parameter ${requiredParam}` });
     }
   }
 
@@ -49,7 +49,7 @@ app.route('/api/v1/journals') // WORKS // TESTED
     const newJournal = req.body;
     for (const requiredParam of ['pubmed']) {
       if (!req.body[requiredParam]) {
-        return res.status(422).json(`Missing required parameter ${requiredParam}`);
+        return res.status(422).json({ error: `Missing required parameter ${requiredParam}` });
       }
     }
     return db('journals')
@@ -89,7 +89,7 @@ app.route('/api/v1/genes') // WORKS // TESTED
 
     for (const requiredParam of params) {
       if (!req.body[requiredParam]) {
-        return res.status(422).json(`Missing required parameter ${requiredParam}`);
+        return res.status(422).json({ error: `Missing required parameter ${requiredParam}` });
       }
     }
     return db('genes').insert(newGene, 'id')
@@ -104,7 +104,7 @@ app.route('/api/v1/journals/:pubmed') // TESTED
       .select()
       .then((journals) => {
         if (journals.length) {
-          res.status(200).json({ journals });
+          res.status(200).json(journals);
         } else {
           res.status(404).json({
             error: `Could not find journal with pubmed id of ${req.params.pubmed}`,
@@ -133,7 +133,7 @@ app.route('/api/v1/journals/:pubmed/genes') // WORKS
       .select()
       .then((genes) => {
         if (genes.length) {
-          res.status(200).json({ genes });
+          res.status(200).json(genes);
         } else {
           res.status(404).json({
             error: `Could not find genes with pubmed id of ${pubmed}`,
