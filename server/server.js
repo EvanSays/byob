@@ -34,14 +34,14 @@ app.post('/api/v1/admin', (req, res) => {
         error: `Missing required parameter ${param}`,
       });
     }
-    // return null;
+    return res.status(500).json();
   });
 
   if (payload.email.endsWith('@turing.io')) {
     Object.assign(payload, { admin: true });
   }
   const token = jwt.sign(payload, app.get('secretKey'), { expiresIn: '7d' });
-  return res.status(200).json({token: token});
+  return res.status(200).json({ token });
 });
 
 app.route('/api/v1/journals') //  WORKS
