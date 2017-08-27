@@ -303,4 +303,82 @@ describe('API Routes', () => {
         });
     });
   });
+  describe('GET genes/id', () => {
+    it('should get a gene', (done) => {
+      chai.request(server)
+        .post('/api/v1/admin')
+        .send({ appName: 'Crisper', email: 'bucket@turing.io' })
+        .end((err, res) => {
+          const token = res.body.token;
+          chai.request(server)
+            .post('/api/v1/genes/')
+            .send({
+              id: 1,
+              start: 1234,
+              end: 5678,
+              chr: 'chrString',
+              strand: 'strandSting',
+              cellline: 'celllineString',
+              condition: 'conditionString',
+              sequence: 'sequenceString',
+              symbol: 'symbolString',
+              ensg: 'ensgString',
+              log2fc: 4.9884,
+              rc_initial: 'rc_initialString',
+              rc_final: 'rc_finalString',
+              effect: 429884,
+              cas: 'casString',
+              screentype: 'screentypeString',
+              pubmed_journal: 24336569,
+            })
+            .end((req, res) => {
+              chai.request(server)
+                .get('/api/v1/genes/1')
+                .end((req, res) => {
+                  res.should.have.status(200);
+                  res.body[0].should.have.property('id');
+                  res.body[0].id.should.equal(1);
+                  done();
+                });
+            });
+        });
+    });
+    it('should not retrieve a gene without proper id', (done) => {
+      chai.request(server)
+        .post('/api/v1/admin')
+        .send({ appName: 'Crisper', email: 'bucket@turing.io' })
+        .end((err, res) => {
+          const token = res.body.token;
+          chai.request(server)
+            .post('/api/v1/genes/')
+            .send({
+              id: 1,
+              start: 1234,
+              end: 5678,
+              chr: 'chrString',
+              strand: 'strandSting',
+              cellline: 'celllineString',
+              condition: 'conditionString',
+              sequence: 'sequenceString',
+              symbol: 'symbolString',
+              ensg: 'ensgString',
+              log2fc: 4.9884,
+              rc_initial: 'rc_initialString',
+              rc_final: 'rc_finalString',
+              effect: 429884,
+              cas: 'casString',
+              screentype: 'screentypeString',
+              pubmed_journal: 24336569,
+            })
+            .end((req, res) => {
+              chai.request(server)
+                .get('/api/v1/genes/wrong')
+                .end((req, res) => {
+                  res.should.have.status(500);
+                  done();
+                });
+            });
+        });
+    });
+  });
 });
