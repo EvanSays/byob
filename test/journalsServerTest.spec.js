@@ -28,6 +28,18 @@ describe('API Routes', () => {
         done()
       })
     })
+
+    it.only('02: should break when improper values are passed', (done) => {
+      chai.request(server)
+      .post('/api/v1/admin')
+      .send({ crappName: 'Crisper', email: 'bucket@turing.io' })
+      .end((err, res) => {
+        res.should.have.status(422)
+        res.body.should.equal('Missing required parameter appName')
+        done()
+      })
+    })
+
   })
 
   describe('POST api/v1/journals', () => {
