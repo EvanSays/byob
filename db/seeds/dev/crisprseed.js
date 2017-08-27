@@ -6,6 +6,7 @@ const createGene = (knex, gene) => knex('genes').insert(gene);
 const createJournal = (knex, journal) => knex('journals').insert({
   pubmed: journal.pubmed,
 }, 'id')
+/* eslint-disable no-unused-vars */
   .then((journalId) => {
     const genePromises = [];
 
