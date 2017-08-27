@@ -15,7 +15,7 @@ The API is REST API and uses JWT for authentication purposes. The return format 
 - **[<code>GET</code> journals]()** +
 - **[<code>POST</code> journals]()** +
 - **[<code>GET</code> journals/:pubmed]()** +
-- **[<code>PATCH</code> journals/:pubmed]()** +
+- **[<code>PATCH</code> journals/:pubmed](https://github.com/EvanSays/byob/blob/master/docs/GET_journals_pubmed.md)** +
 - **[<code>GET</code> journals/:pubmed/genes](https://github.com/EvanSays/byob/blob/master/docs/GET_genes.md)** +
 - **[<code>DELETE</code> journals/:pubmed/genes](https://github.com/EvanSays/byob/blob/master/docs/DELETE_journals_pubmed_genes.md)** +
 
