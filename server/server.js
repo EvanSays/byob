@@ -30,26 +30,25 @@ app.post('/api/v1/admin', (req, res) => { // TESTED
       return res.status(422).json({ error: `Missing required parameter ${requiredParam}` });
     }
   }
-
   if (payload.email.endsWith('@turing.io')) {
     Object.assign(payload, { admin: true });
-  }
+  } else { Object.assign(payload, { admin: false }) }
   const token = jwt.sign(payload, app.get('secretKey'), { expiresIn: '7d' });
   return res.status(200).json({ token });
 });
 
-app.route('/api/v1/journals') // WORKS // TESTED
-  .get((req, res) => {
+app.route('/api/v1/journals') // WORKS
+  .get((req, res) => { // TESTED
     db('journals')
       .select()
       .then(data => res.status(200).json({ data }))
       .catch(error => res.status(500).json({ error }));
   })
-  .post((req, res) => {
+  .post((req, res) => { // TESTED
     const newJournal = req.body;
     for (const requiredParam of ['pubmed']) {
       if (!req.body[requiredParam]) {
-        return res.status(422).json({ error: `Missing required parameter ${requiredParam}` });
+        return res.status(422).json(`Missing required parameter ${requiredParam}. Instead recieved '${Object.keys(req.body)}'.`);
       }
     }
     return db('journals')
