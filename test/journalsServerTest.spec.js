@@ -29,13 +29,24 @@ describe('API Routes', () => {
       })
     })
 
-    it.only('02: should break when improper values are passed', (done) => {
+    it('02: should break when improper values (appName) are passed', (done) => {
       chai.request(server)
       .post('/api/v1/admin')
       .send({ crappName: 'Crisper', email: 'bucket@turing.io' })
       .end((err, res) => {
         res.should.have.status(422)
         res.body.should.equal('Missing required parameter appName')
+        done()
+      })
+    })
+
+    it.only('03: should break when improper values (email) are passed', (done) => {
+      chai.request(server)
+      .post('/api/v1/admin')
+      .send({ appName: 'Crisper', emale: 'bucket@turing.io' })
+      .end((err, res) => {
+        res.should.have.status(422)
+        res.body.should.equal('Missing required parameter email')
         done()
       })
     })
