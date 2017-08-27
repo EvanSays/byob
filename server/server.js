@@ -39,7 +39,7 @@ app.post('/api/v1/admin', (req, res) => {
     Object.assign(payload, { admin: true });
   }
   const token = jwt.sign(payload, app.get('secretKey'), { expiresIn: '7d' });
-  res.status(200).json(token);
+  res.status(200).json({ token });
   return null;
 });
 
@@ -52,11 +52,11 @@ app.route('/api/v1/journals') //  WORKS
   })
   .post((req, res) => {
     const newJournal = req.body;
-    for (let requiredParam of ['pubmed']) {
+    for (const requiredParam of ['pubmed']) {
       if (!req.body[requiredParam]) {
         return res.status(422).json(`Missing required parameter ${requiredParam}`);
       }
-    };
+    }
     db('journals')
       .insert(newJournal, 'id')
       .then((journal) => {
@@ -129,7 +129,7 @@ app.route('/api/v1/journals/:pubmed')
       .select()
       .update(newPatch, 'id')
       .then((genes) => {
-        res.status(201).json(genes);
+        res.status(201).json({ id: genes });
       })
       .catch((error) => {
         res.status(500).json({ error });
@@ -138,40 +138,43 @@ app.route('/api/v1/journals/:pubmed')
 
 app.route('/api/v1/journals/:pubmed/genes') // WORKS
   .get((req, res) => {
+    const { pubmed } = req.params;
     db('genes')
-      .where('pubmed_journal', req.params.pubmed)
+      .where('pubmed_journal', pubmed)
       .select()
       .then((genes) => {
         if (genes.length) {
           res.status(200).json(genes);
         } else {
           res.status(404).json({
-            error: `Could not find genes with pubmed id of ${req.params.pubmed}`,
+            error: `Could not find genes with pubmed id of ${pubmed}`,
           });
         }
       })
       .catch((error) => {
         res.status(500).json({ error });
       });
+  })
+  .delete(checkAuth, (req, res) => {
+    const { pubmed } = req.params;
+
+    for (const requiredParameter of ['pubmed']) {
+      if (!req.params[requiredParameter]) {
+        return res.status(422).json({
+          error: `Missing required parameter ${requiredParameter}`,
+        });
+      }
+    }
+    db('genes')
+      .where('pubmed_journal', pubmed)
+      .del()
+      .then(data => res.status(200).json({
+        res: `The genes linked to '${pubmed}' and all it's corresponding data has been destroyed.`,
+        data,
+      }))
+      .catch(error => console.log(error));
+    return null;
   });
-// .delete(checkAuth, (req, res) => {
-// const { pubmed } = req.params;
-//
-// for (const requiredParameter of ['pubmed']) {
-//   if (!req.params[requiredParameter]) {
-//     return res.status(422).json({
-//       error: `Missing required parameter ${requiredParameter}`
-//     })
-//   }
-// }
-// db('genes')
-//   .where('pubmed_journal', req.params.pubmed).del()
-//   .then(data => res.status(200).json({
-//     resp: `The genes '${genes}' and all it's corresponding data has been destroyed.`,
-//     data,
-//   }))
-//   .catch(error => console.log(error))
-// })
 
 app.route('/api/v1/genes/:id') // WORKS
   .get((req, res) => {
@@ -200,25 +203,24 @@ app.route('/api/v1/genes/:id') // WORKS
   })
   .delete(checkAuth, (req, res) => {
     const { id } = req.params;
-    const params = ['id'];
-    params.forEach((param) => {
-      if (!req.params[param]) {
+    for (const requiredParameter of ['id']) {
+      if (!req.params[requiredParameter]) {
         return res.status(422).json({
-          error: `Missing required parameter ${param}`,
+          error: `Missing required parameter ${requiredParameter}`,
         });
       }
-      return null;
-    });
+    }
     db('genes')
       .where('id', id)
       .del()
       .then(data => res.status(200).json({
-        resp: `The id '${id}' and all it's corresponding data has been destroyed. Forever.`,
+        res: `The id '${id}' and all it's corresponding data has been destroyed. Forever.`,
         data,
       }))
       .catch((error) => {
         res.status(500).json({ error });
       });
+    return null;
   });
 
 app.listen(app.get('port'), () => {

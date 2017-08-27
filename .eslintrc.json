@@ -4,6 +4,12 @@
     "import"
   ],
   "rules": {
+    "no-restricted-syntax": [
+      "error",
+      "ForInStatement",
+      "LabeledStatement",
+      "WithStatement"
+    ],
     "radix": [
       0
     ],
@@ -15,7 +21,8 @@
   "env": {
     "browser": true,
     "node": true,
-    "mocha": true
+    "mocha": true,
+    "jquery": true
   },
   "globals": {
     "document": false,

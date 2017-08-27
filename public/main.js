@@ -1,35 +1,32 @@
-const email = $('#email')
-const appNames = $('#appName')
-const submitBtn = $('#submit-btn')
-const adminPrint = $('#key-container')
+const email = $('#email');
+const appNames = $('#appName');
+const submitBtn = $('#submit-btn');
+const adminPrint = $('#key-container');
 
 const adminView = (key) => {
-
-  adminPrint.empty()
+  adminPrint.empty();
   adminPrint.append(
     `
-    <p>${key}</p>
-    `
-  )
-}
+    <p>${key.token}</p>
+    `,
+  );
+};
 
 const login = (data) => {
-
   fetch('api/v1/admin/', {
-    method: "POST",
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(data),
   })
-  .then(res => res.json())
-  .then(data => adminView(data))
-  .catch(error => console.log('error at admin', error))
-}
+    .then(res => res.json())
+    .then(key => adminView(key));
+};
 
 submitBtn.on('click', () => {
-  const emailVal = email.val()
-  const appNameVal = appNames.val()
+  const emailVal = email.val();
+  const appNameVal = appNames.val();
 
-  login({ appName: appNameVal, email: emailVal })
-})
+  login({ appName: appNameVal, email: emailVal });
+});
