@@ -53,7 +53,7 @@ describe('API Routes', () => {
         });
     });
 
-    it('02: should have admin priveledges to update journals', (done) => {
+    it.skip('02: should have admin priveledges to update journals', (done) => {
       chai.request(server)
         .post('/api/v1/journals')
         .send({ id: 12231, pubmed: 435367 })
