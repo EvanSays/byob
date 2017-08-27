@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-unused-expressions */
 
-
 process.env.NODE_ENV = 'test';
 const chai = require('chai');
 const chaiHTTP = require('chai-http');
@@ -186,6 +185,8 @@ describe('API Routes', () => {
         .post('/api/v1/admin')
         .send({ appName: 'Crisper', email: 'bucket@turing.io' })
         .end((err, res) => {
+          res.should.have.status(200)
+
           chai.request(server)
             .delete('/api/v1/journals/27661255/genes')
             .set({ authorization: `${res.body.token}` })
@@ -199,11 +200,14 @@ describe('API Routes', () => {
             });
         });
     });
+
     it('should not delete genes with wrong pubmed', (done) => {
       chai.request(server)
         .post('/api/v1/admin')
         .send({ appName: 'Crisper', email: 'bucket@turing.io' })
         .end((err, res) => {
+          res.should.have.status(200)
+
           chai.request(server)
             .delete('/api/v1/journals/12345678/genes')
             .set({ authorization: `${res.body.token}` })
@@ -225,6 +229,7 @@ describe('API Routes', () => {
         .post('/api/v1/admin')
         .send({ appName: 'Crisper', email: 'bucket@turing.io' })
         .end((err, res) => {
+          res.should.have.status(200)
           const token = res.body.token;
 
           chai.request(server)
@@ -240,19 +245,20 @@ describe('API Routes', () => {
 
     it('should not delete if required params are incorrrect', (done) => {
       chai.request(server)
-      .post('/api/v1/admin')
-      .send({ appName: 'Crisper', email: 'bucket@turing.io' })
-      .end((err, res) => {
-        const token = res.body.token;
-
-        chai.request(server)
-        .delete('/api/v1/genes/two')
-        .set({ authorization: `${token}` })
+        .post('/api/v1/admin')
+        .send({ appName: 'Crisper', email: 'bucket@turing.io' })
         .end((err, res) => {
-          res.should.have.status(500)
-          done()
-        })
-      })
-    })
+          res.should.have.status(200)
+          const token = res.body.token;
+
+          chai.request(server)
+            .delete('/api/v1/genes/two')
+            .set({ authorization: `${token}` })
+            .end((err, res) => {
+              res.should.have.status(500);
+              done();
+            });
+        });
+    });
   });
 });
