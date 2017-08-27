@@ -62,9 +62,18 @@ app.route('/api/v1/genes') // WORKS // TESTED
   .get((req, res) => {
     db('genes')
       .modify((query) => {
-        if (req.query.start) {
-          query.where('start', req.query.start);
+        const params = [
+          'start', 'end', 'strand', 'cellline',
+          'condition', 'sequence', 'symbol', 'ensg',
+          'log2fc', 'rc_initial', 'rc_final', 'effect',
+          'cas', 'screentype', 'pubmed_journal'];
+
+        for (const requiredParam of params) {
+          if (req.query[requiredParam]) {
+            return query.where(requiredParam, req.query[requiredParam]);
+          }
         }
+        return null;
       })
       .select()
       .then(data => res.status(200).json({ data }))
