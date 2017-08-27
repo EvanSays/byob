@@ -4,6 +4,7 @@ process.env.NODE_ENV = 'test';
 const chai = require('chai');
 const chaiHTTP = require('chai-http');
 const server = require('../server/server');
+
 const should = chai.should();
 
 const environment = process.env.NODE_ENV || 'test';
@@ -19,74 +20,91 @@ describe('API Routes', () => {
       .then(() => done());
   });
 
-  describe('ADMIN', () => {
-
+  describe('POST /admin', () => {
     it('01: should return a jwt encrypted token', (done) => {
       chai.request(server)
-      .post('/api/v1/admin')
-      .send({ appName: 'Crisper', email: 'bucket@turing.io' })
-      .end((err, res) => {
-        res.should.have.status(200);
-        done();
-      });
+        .post('/api/v1/admin')
+        .send({ appName: 'Crisper', email: 'bucket@turing.io' })
+        .end((err, res) => {
+          res.should.have.status(200);
+          done();
+        });
     });
 
     it('02: should break when improper values (appName) are passed', (done) => {
       chai.request(server)
-      .post('/api/v1/admin')
-      .send({ crappName: 'Crisper', email: 'bucket@turing.io' })
-      .end((err, res) => {
-        res.should.have.status(422);
-        res.body.should.equal('Missing required parameter appName')
-        done();
-      });
+        .post('/api/v1/admin')
+        .send({ crappName: 'Crisper', email: 'bucket@turing.io' })
+        .end((err, res) => {
+          res.should.have.status(422);
+          res.body.error.should.equal('Missing required parameter appName');
+          done();
+        });
     });
 
     it('03: should break when improper values (email) are passed', (done) => {
       chai.request(server)
-      .post('/api/v1/admin')
-      .send({ appName: 'Crisper', emale: 'bucket@turing.io' })
-      .end((err, res) => {
-        res.should.have.status(422);
-        res.body.should.equal('Missing required parameter email')
-        done();
-      });
+        .post('/api/v1/admin')
+        .send({ appName: 'Crisper', emale: 'bucket@turing.io' })
+        .end((err, res) => {
+          res.should.have.status(422);
+          res.body.error.should.equal('Missing required parameter email');
+          done();
+        });
     });
 
     it('04: should', (done) => {
       chai.request(server)
-      .post('/api/v1/admin')
-      .send({ appName: 'BYOB', email: 'bucket@poo.io' })
-      .end((err, res) => {
-        res.should.have.status(200)
-        let token = res.body.token
-
-        chai.request(server)
-        .patch('/api/v1/journals/435367')
-        .set({"authorization": `${token}`})
-        .send({ pubmed: 132435 })
+        .post('/api/v1/admin')
+        .send({ appName: 'BYOB', email: 'bucket@poo.io' })
         .end((err, res) => {
-          res.error.text.should.equal('{"error":"you must have admin privledges"}')
-          res.should.have.status(403)
-          done()
+          res.should.have.status(200);
+          const token = res.body.token;
+
+          chai.request(server)
+            .patch('/api/v1/journals/435367')
+            .set({ authorization: `${token}` })
+            .send({ pubmed: 132435 })
+            .end((err, res) => {
+              res.error.text.should.equal('{"error":"you must have admin privledges"}');
+              res.should.have.status(403);
+              done();
+            });
         });
-      });
     });
   });
 
-  describe('POST api/v1/journals', () => {
-    it('01: should not create a journal with missing data', (done) => {
+  describe('POST /journals', () => {
+    it('01: should add journal', (done) => {
       chai.request(server)
         .post('/api/v1/journals')
-        .send({})
+        .send({ id: 12231, pubmed: 435367 })
+        .end((err, res) => {
+          res.body.should.have.property('id');
+          res.body.id.should.equal(12231);
+
+          chai.request(server)
+            .get('/api/v1/journals/435367')
+            .end((err, res) => {
+              res.should.have.status(200);
+              res.body[0].should.have.property('id');
+              res.body[0].id.should.equal(12231);
+              done();
+            });
+        });
+    });
+    it('should not add journal with missing params', (done) => {
+      chai.request(server)
+        .post('/api/v1/journals')
+        .send({ id: 12231, wrong: 435367 })
         .end((err, res) => {
           res.should.have.status(422);
-          res.body.should.equal('Missing required parameter pubmed');
+          res.body.should.have.property('error');
+          res.body.error.should.equal('Missing required parameter pubmed');
           done();
         });
     });
   });
-
 
   describe('GET /journals', () => {
     it('01: should return all journals', (done) => {

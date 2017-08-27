@@ -161,6 +161,7 @@ describe('API Routes', () => {
           res.should.have.status(200);
           res.body.should.be.a('array');
           res.body[0].should.be.a('object');
+          res.body[0].pubmed_journal.should.equal(24336571);
           done();
         });
     });
@@ -178,51 +179,40 @@ describe('API Routes', () => {
   });
 
   describe('DELETE /journals/:pubmed/genes', () => {
-    it.only('should remove genes', () => {
+    it('should delete genes', (done) => {
       chai.request(server)
         .post('/api/v1/admin')
         .send({ appName: 'Crisper', email: 'bucket@turing.io' })
         .end((err, res) => {
           chai.request(server)
-            .post('/journals/:pubmed/genes')
-        });
-        // .delete('/api/v1/journals/:pubmed/genes')
-
-    });
-  });
-
-  describe('POST /journals', () => {
-    it('01: should sucessfully use the id from the previous test as a query parameter', (done) => {
-      chai.request(server)
-        .post('/api/v1/journals')
-        .send({ id: 12231, pubmed: 435367 })
-        .end((err, res) => {
-          res.body.should.have.property('id');
-          res.body.id.should.equal(12231);
-
-          chai.request(server)
-            .get('/api/v1/journals/435367')
+            .delete('/api/v1/journals/27661255/genes')
+            .set({ authorization: `${res.body.token}` })
             .end((err, res) => {
               res.should.have.status(200);
-              res.body[0].should.have.property('id');
-              res.body[0].id.should.equal(12231);
+              res.body.should.have.property('data');
+              res.body.should.have.property('res');
+              res.body.data.should.equal(2);
+              res.body.res.should.equal('The genes linked to \'27661255\' and all it\'s corresponding data has been destroyed.');
               done();
             });
         });
     });
-  });
-
-
-  describe('GET /journals/:pubmed/genes', () => {
-    it('01: should get genes associated with pubmed id', (done) => {
+    it('should not delete genes with wrong pubmed', (done) => {
       chai.request(server)
-        .get('/api/v1/journals/24336571/genes')
+        .post('/api/v1/admin')
+        .send({ appName: 'Crisper', email: 'bucket@turing.io' })
         .end((err, res) => {
-          res.should.have.status(200);
-          res.body.should.be.a('array');
-          res.body[0].should.be.a('object');
-          res.body[0].pubmed_journal.should.equal(24336571);
-          done();
+          chai.request(server)
+            .delete('/api/v1/journals/12345678/genes')
+            .set({ authorization: `${res.body.token}` })
+            .end((err, res) => {
+              res.should.have.status(200);
+              res.body.should.have.property('data');
+              res.body.should.have.property('res');
+              res.body.data.should.equal(0);
+              res.body.res.should.equal('The genes linked to \'12345678\' and all it\'s corresponding data has been destroyed.');
+              done();
+            });
         });
     });
   });
