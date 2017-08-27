@@ -171,9 +171,9 @@ app.route('/api/v1/genes/:id') // WORKS
   .delete(checkAuth, (req, res) => {
     const { id } = req.params;
     for (const requiredParameter of ['id']) {
-      if (!req.params[requiredParameter] || typeof requiredParameter !== 'integer') {
+      if (!req.params[requiredParameter]) {
         return res.status(422).json({
-          error: `Missing the required parameter ${requiredParameter}. It should be an integer. Instead recieved "${req.params.id}" which is a "${typeof req.params.id}"`,
+          error: `Missing required parameter ${requiredParameter}.`,
         });
       }
     }

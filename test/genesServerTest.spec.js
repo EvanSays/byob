@@ -238,7 +238,7 @@ describe('API Routes', () => {
         });
     });
 
-    it.only('should not delete if required params are incorrrect', (done) => {
+    it('should not delete if required params are incorrrect', (done) => {
       chai.request(server)
       .post('/api/v1/admin')
       .send({ appName: 'Crisper', email: 'bucket@turing.io' })
@@ -249,8 +249,7 @@ describe('API Routes', () => {
         .delete('/api/v1/genes/two')
         .set({ authorization: `${token}` })
         .end((err, res) => {
-          res.should.have.status(422)
-          res.body.error.should.equal('Missing the required parameter id. It should be an integer. Instead recieved "two" which is a "string"')
+          res.should.have.status(500)
           done()
         })
       })
