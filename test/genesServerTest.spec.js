@@ -73,7 +73,6 @@ describe('API Routes', () => {
     });
   });
 
-
   describe('POST /genes', () => {
     it('01: should be able to post to genes', (done) => {
       chai.request(server)
