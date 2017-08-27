@@ -18,7 +18,7 @@ const checkAuth = (req, res, next) => {
     if (decoded.admin) {
       next();
     } else {
-      res.status(403).json({ error: `Your admin stats is set to ${decoded.admin}. It muse be set to true to proceed` });
+      res.status(403).json({ error: `Your admin stats is set to ${decoded.admin}. It must be set to true to proceed` });
     }
     return null;
   });
