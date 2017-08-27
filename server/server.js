@@ -32,7 +32,7 @@ app.post('/api/v1/admin', (req, res) => { // TESTED
   }
   if (payload.email.endsWith('@turing.io')) {
     Object.assign(payload, { admin: true });
-  } else { Object.assign(payload, { admin: false }) }
+  } else { Object.assign(payload, { admin: false }); }
   const token = jwt.sign(payload, app.get('secretKey'), { expiresIn: '7d' });
   return res.status(200).json({ token });
 });
@@ -61,9 +61,18 @@ app.route('/api/v1/genes') // WORKS // TESTED
   .get((req, res) => {
     db('genes')
       .modify((query) => {
-        if (req.query.start) {
-          query.where('start', req.query.start);
+        const params = [
+          'start', 'end', 'strand', 'cellline',
+          'condition', 'sequence', 'symbol', 'ensg',
+          'log2fc', 'rc_initial', 'rc_final', 'effect',
+          'cas', 'screentype', 'pubmed_journal'];
+
+        for (const requiredParam of params) {
+          if (req.query[requiredParam]) {
+            return query.where(requiredParam, req.query[requiredParam]);
+          }
         }
+        return null;
       })
       .select()
       .then(data => res.status(200).json({ data }))

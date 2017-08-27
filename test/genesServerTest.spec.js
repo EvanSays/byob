@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-unused-expressions */
-
 process.env.NODE_ENV = 'test';
 const chai = require('chai');
 const chaiHTTP = require('chai-http');
@@ -185,8 +184,6 @@ describe('API Routes', () => {
         .post('/api/v1/admin')
         .send({ appName: 'Crisper', email: 'bucket@turing.io' })
         .end((err, res) => {
-          res.should.have.status(200)
-
           chai.request(server)
             .delete('/api/v1/journals/27661255/genes')
             .set({ authorization: `${res.body.token}` })
@@ -200,14 +197,11 @@ describe('API Routes', () => {
             });
         });
     });
-
     it('should not delete genes with wrong pubmed', (done) => {
       chai.request(server)
         .post('/api/v1/admin')
         .send({ appName: 'Crisper', email: 'bucket@turing.io' })
         .end((err, res) => {
-          res.should.have.status(200)
-
           chai.request(server)
             .delete('/api/v1/journals/12345678/genes')
             .set({ authorization: `${res.body.token}` })
@@ -222,7 +216,6 @@ describe('API Routes', () => {
         });
     });
   });
-
   describe('DELETE /genes/:id', () => {
     it('should delete all data pertaining to the id entered in the params', (done) => {
       chai.request(server)
@@ -231,18 +224,16 @@ describe('API Routes', () => {
         .end((err, res) => {
           res.should.have.status(200)
           const token = res.body.token;
-
           chai.request(server)
             .delete('/api/v1/genes/2')
             .set({ authorization: `${token}` })
             .end((err, res) => {
               res.should.have.status(200);
-              res.body.res.should.equal('The id "2" and all its corresponding data has been destroyed. Forever.');
+              res.body.res.should.equal('The id \'2\' and all it\'s corresponding data has been destroyed. Forever.');
               done();
             });
         });
     });
-
     it('should not delete if required params are incorrrect', (done) => {
       chai.request(server)
         .post('/api/v1/admin')
@@ -250,7 +241,6 @@ describe('API Routes', () => {
         .end((err, res) => {
           res.should.have.status(200)
           const token = res.body.token;
-
           chai.request(server)
             .delete('/api/v1/genes/two')
             .set({ authorization: `${token}` })
@@ -258,6 +248,195 @@ describe('API Routes', () => {
               res.should.have.status(500);
               done();
             });
+        });
+    });
+  });
+  describe('PATCH /genes/:id', () => {
+    it('should update a gene', (done) => {
+      chai.request(server)
+        .post('/api/v1/admin')
+        .send({ appName: 'Crisper', email: 'bucket@turing.io' })
+        .end((err, res) => {
+          const token = res.body.token;
+          chai.request(server)
+            .post('/api/v1/genes/')
+            .send({
+              id: 1,
+              start: 1234,
+              end: 5678,
+              chr: 'chrString',
+              strand: 'strandSting',
+              cellline: 'celllineString',
+              condition: 'conditionString',
+              sequence: 'sequenceString',
+              symbol: 'symbolString',
+              ensg: 'ensgString',
+              log2fc: 4.9884,
+              rc_initial: 'rc_initialString',
+              rc_final: 'rc_finalString',
+              effect: 429884,
+              cas: 'casString',
+              screentype: 'screentypeString',
+              pubmed_journal: 24336569,
+            })
+            .end((req, res) => {
+              chai.request(server)
+                .patch('/api/v1/genes/1')
+                .set({ authorization: `${token}` })
+                .send({ sequence: 'THISISEVANSEQUENCEHERE' })
+                .end((err, res) => {
+                  chai.request(server)
+                    .get('/api/v1/genes/1')
+                    .end((err, res) => {
+                      res.should.have.status(200);
+                      res.body[0].should.have.property('sequence');
+                      res.body[0].sequence.should.equal('THISISEVANSEQUENCEHERE');
+                      done();
+                    });
+                });
+            });
+        });
+    });
+    it('should not update a gene', (done) => {
+      chai.request(server)
+        .post('/api/v1/admin')
+        .send({ appName: 'Crisper', email: 'bucket@turing.io' })
+        .end((err, res) => {
+          const token = res.body.token;
+          chai.request(server)
+            .post('/api/v1/genes/')
+            .send({
+              id: 1,
+              start: 1234,
+              end: 5678,
+              chr: 'chrString',
+              strand: 'strandSting',
+              cellline: 'celllineString',
+              condition: 'conditionString',
+              sequence: 'sequenceString',
+              symbol: 'symbolString',
+              ensg: 'ensgString',
+              log2fc: 4.9884,
+              rc_initial: 'rc_initialString',
+              rc_final: 'rc_finalString',
+              effect: 429884,
+              cas: 'casString',
+              screentype: 'screentypeString',
+              pubmed_journal: 24336569,
+            })
+            .end((req, res) => {
+              chai.request(server)
+                .patch('/api/v1/genes/1')
+                .set({ authorization: `${token}` })
+                .send({ wrong: 'THISISEVANSEQUENCEHERE' })
+                .end((err, res) => {
+                  res.should.have.status(500);
+                  done();
+                });
+            });
+        });
+    });
+  });
+  describe('GET genes/id', () => {
+    it('should get a gene', (done) => {
+      chai.request(server)
+        .post('/api/v1/admin')
+        .send({ appName: 'Crisper', email: 'bucket@turing.io' })
+        .end((err, res) => {
+          const token = res.body.token;
+          chai.request(server)
+            .post('/api/v1/genes/')
+            .send({
+              id: 1,
+              start: 1234,
+              end: 5678,
+              chr: 'chrString',
+              strand: 'strandSting',
+              cellline: 'celllineString',
+              condition: 'conditionString',
+              sequence: 'sequenceString',
+              symbol: 'symbolString',
+              ensg: 'ensgString',
+              log2fc: 4.9884,
+              rc_initial: 'rc_initialString',
+              rc_final: 'rc_finalString',
+              effect: 429884,
+              cas: 'casString',
+              screentype: 'screentypeString',
+              pubmed_journal: 24336569,
+            })
+            .end((req, res) => {
+              chai.request(server)
+                .get('/api/v1/genes/1')
+                .end((req, res) => {
+                  res.should.have.status(200);
+                  res.body[0].should.have.property('id');
+                  res.body[0].id.should.equal(1);
+                  done();
+                });
+            });
+        });
+    });
+    it('should not retrieve a gene without proper id', (done) => {
+      chai.request(server)
+        .post('/api/v1/admin')
+        .send({ appName: 'Crisper', email: 'bucket@turing.io' })
+        .end((err, res) => {
+          const token = res.body.token;
+          chai.request(server)
+            .post('/api/v1/genes/')
+            .send({
+              id: 1,
+              start: 1234,
+              end: 5678,
+              chr: 'chrString',
+              strand: 'strandSting',
+              cellline: 'celllineString',
+              condition: 'conditionString',
+              sequence: 'sequenceString',
+              symbol: 'symbolString',
+              ensg: 'ensgString',
+              log2fc: 4.9884,
+              rc_initial: 'rc_initialString',
+              rc_final: 'rc_finalString',
+              effect: 429884,
+              cas: 'casString',
+              screentype: 'screentypeString',
+              pubmed_journal: 24336569,
+            })
+            .end((req, res) => {
+              chai.request(server)
+                .get('/api/v1/genes/wrong')
+                .end((req, res) => {
+                  res.should.have.status(500);
+                  done();
+                });
+            });
+        });
+    });
+  });
+  describe('QUERY genes', () => {
+    it('should search by query', (done) => {
+      chai.request(server)
+        .get('/api/v1/genes')
+        .end((req, res) => {
+          res.body.data.should.have.length(30);
+          chai.request(server)
+            .get('/api/v1/genes?cellline=A375')
+            .end((req, res) => {
+              res.should.have.status(200);
+              res.body.data.should.have.length(4);
+              done();
+            });
+        });
+    });
+    it('should not return a wrong query', (done) => {
+      chai.request(server)
+        .get('/api/v1/genes?wrong=query')
+        .end((req, res) => {
+          res.should.have.status(200);
+          res.body.data.should.have.length(30);
+          done();
         });
     });
   });
