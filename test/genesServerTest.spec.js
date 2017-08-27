@@ -222,7 +222,7 @@ describe('API Routes', () => {
         .post('/api/v1/admin')
         .send({ appName: 'Crisper', email: 'bucket@turing.io' })
         .end((err, res) => {
-          res.should.have.status(200)
+          res.should.have.status(200);
           const token = res.body.token;
           chai.request(server)
             .delete('/api/v1/genes/2')
@@ -239,7 +239,7 @@ describe('API Routes', () => {
         .post('/api/v1/admin')
         .send({ appName: 'Crisper', email: 'bucket@turing.io' })
         .end((err, res) => {
-          res.should.have.status(200)
+          res.should.have.status(200);
           const token = res.body.token;
           chai.request(server)
             .delete('/api/v1/genes/two')
