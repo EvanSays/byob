@@ -39,14 +39,14 @@ app.post('/api/v1/admin', (req, res) => { // TESTED
   return res.status(200).json({token: token});
 });
 
-app.route('/api/v1/journals') // WORKS // TESTED
-  .get((req, res) => {
+app.route('/api/v1/journals') // WORKS
+  .get((req, res) => { // TESTED
     db('journals')
       .select()
       .then(data => res.status(200).json({ data }))
       .catch(error => console.log(error));
   })
-  .post((req, res) => {
+  .post((req, res) => { // TESTED
     const newJournal = req.body;
     for (const requiredParam of ['pubmed']) {
       if (!req.body[requiredParam]) {

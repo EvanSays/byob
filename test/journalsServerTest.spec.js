@@ -115,32 +115,6 @@ describe('API Routes', () => {
         done();
       });
     });
-
-    it('02: should have admin priveledges to update journals', (done) => {
-      chai.request(server)
-      .post('/api/v1/journals')
-      .send({id: 12231, pubmed: 435367})
-      .end((err, response) => {
-        response.body.should.have.property('id');
-        response.body.id.should.equal(12231);
-
-        chai.request(server)
-        .post('/api/v1/admin')
-        .send({ appName: 'Crisper', email: 'bucket@turing.io' })
-        .end((err, res) => {
-          let token = res.body.token
-
-          chai.request(server)
-          .patch('/api/v1/journals/435367')
-          .set({"authorization": `${token}`})
-          .send({ pubmed: 132435 })
-          .end((err, res) => {
-            response.body.id.should.deep.equal(12231)
-            done()
-          });
-        });
-      });
-    });
   });
 
   describe('POST /journals', () => {
@@ -163,6 +137,60 @@ describe('API Routes', () => {
           response.body[0].should.have.property('created_at');
           response.body[0].should.have.property('updated_at');
           done();
+        });
+      });
+    });
+
+    it('02: should require admin priveledges to update journals', (done) => {
+      chai.request(server)
+      .post('/api/v1/journals')
+      .send({id: 12231, pubmed: 435367})
+      .end((err, response) => {
+        response.body.should.have.property('id');
+        response.body.id.should.equal(12231);
+
+        chai.request(server)
+        .post('/api/v1/admin')
+        .send({ appName: 'Crisper', email: 'bucket@turing.io' })
+        .end((err, res) => {
+          response.should.have.status(201)
+          let token = res.body.token
+
+          chai.request(server)
+          .patch('/api/v1/journals/435367')
+          .set({"authorization": `${token}`})
+          .send({ pubmed: 132435 })
+          .end((err, res) => {
+            response.body.id.should.deep.equal(12231)
+            done()
+          });
+        });
+      });
+    });
+
+    it.only('should be denied update priveledges if admin is set to false', (done) => {
+      chai.request(server)
+      .post('/api/v1/journals')
+      .send({id: 12231, pubmed: 435367})
+      .end((err, response) => {
+        response.body.should.have.property('id');
+        response.body.id.should.equal(12231);
+
+        chai.request(server)
+        .post('/api/v1/admin')
+        .send({ appName: 'Crisper', email: 'bucket@poo.io' })
+        .end((err, res) => {
+          res.should.have.status(200)
+          let token = res.body.token;
+
+          chai.request(server)
+          .patch('/api/v1/journals/435637')
+          .set({"authorization": `${token}`})
+          .end((err, res) => {
+            res.should.have.status(403)
+            res.body.error.should.equal("Your admin stats is set to false. It must be set to true to proceed")
+            done()
+          })
         });
       });
     });
