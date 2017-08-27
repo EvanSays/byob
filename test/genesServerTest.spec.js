@@ -1,5 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-unused-expressions */
+
+
 process.env.NODE_ENV = 'test';
 const chai = require('chai');
 const chaiHTTP = require('chai-http');
@@ -215,5 +217,43 @@ describe('API Routes', () => {
             });
         });
     });
+  });
+
+  describe('DELETE /genes/:id', () => {
+    it('should delete all data pertaining to the id entered in the params', (done) => {
+      chai.request(server)
+        .post('/api/v1/admin')
+        .send({ appName: 'Crisper', email: 'bucket@turing.io' })
+        .end((err, res) => {
+          const token = res.body.token;
+
+          chai.request(server)
+            .delete('/api/v1/genes/2')
+            .set({ authorization: `${token}` })
+            .end((err, res) => {
+              res.should.have.status(200);
+              res.body.res.should.equal('The id "2" and all its corresponding data has been destroyed. Forever.');
+              done();
+            });
+        });
+    });
+
+    it.only('should not delete if required params are incorrrect', (done) => {
+      chai.request(server)
+      .post('/api/v1/admin')
+      .send({ appName: 'Crisper', email: 'bucket@turing.io' })
+      .end((err, res) => {
+        const token = res.body.token;
+
+        chai.request(server)
+        .delete('/api/v1/genes/two')
+        .set({ authorization: `${token}` })
+        .end((err, res) => {
+          res.should.have.status(422)
+          res.body.error.should.equal('Missing the required parameter id. It should be an integer. Instead recieved "two" which is a "string"')
+          done()
+        })
+      })
+    })
   });
 });

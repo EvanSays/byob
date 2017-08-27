@@ -134,7 +134,6 @@ app.route('/api/v1/journals/:pubmed/genes') // WORKS
   })
   .delete(checkAuth, (req, res) => {
     const { pubmed } = req.params;
-
     for (const requiredParameter of ['pubmed']) {
       if (!req.params[requiredParameter]) {
         return res.status(422).json({
@@ -172,9 +171,9 @@ app.route('/api/v1/genes/:id') // WORKS
   .delete(checkAuth, (req, res) => {
     const { id } = req.params;
     for (const requiredParameter of ['id']) {
-      if (!req.params[requiredParameter]) {
+      if (!req.params[requiredParameter] || typeof requiredParameter !== 'integer') {
         return res.status(422).json({
-          error: `Missing required parameter ${requiredParameter}`,
+          error: `Missing the required parameter ${requiredParameter}. It should be an integer. Instead recieved "${req.params.id}" which is a "${typeof req.params.id}"`,
         });
       }
     }
@@ -182,7 +181,7 @@ app.route('/api/v1/genes/:id') // WORKS
       .where('id', id)
       .del()
       .then(data => res.status(200).json({
-        res: `The id '${id}' and all it's corresponding data has been destroyed. Forever.`,
+        res: `The id "${id}" and all its corresponding data has been destroyed. Forever.`,
         data,
       }))
       .catch(error => res.status(500).json({ error }));
