@@ -35,7 +35,7 @@ describe('API Routes', () => {
       .send({ crappName: 'Crisper', email: 'bucket@turing.io' })
       .end((err, res) => {
         res.should.have.status(422);
-        res.body.should.equal('Missing required parameter appName')
+        res.body.should.equal('Missing required parameter appName');
         done();
       });
     });
@@ -46,27 +46,27 @@ describe('API Routes', () => {
       .send({ appName: 'Crisper', emale: 'bucket@turing.io' })
       .end((err, res) => {
         res.should.have.status(422);
-        res.body.should.equal('Missing required parameter email')
+        res.body.should.equal('Missing required parameter email');
         done();
       });
     });
 
-    it('04: should', (done) => {
+    it('04: should deny patch priveledges when admin:false', (done) => {
       chai.request(server)
       .post('/api/v1/admin')
       .send({ appName: 'BYOB', email: 'bucket@poo.io' })
       .end((err, res) => {
-        res.should.have.status(200)
-        let token = res.body.token
+        res.should.have.status(200);
+        let token = res.body.token;
 
         chai.request(server)
         .patch('/api/v1/journals/435367')
         .set({"authorization": `${token}`})
         .send({ pubmed: 132435 })
         .end((err, res) => {
-          res.error.text.should.equal('{"error":"Your admin stats is set to false. It must be set to true to proceed"}')
-          res.should.have.status(403)
-          done()
+          res.error.text.should.equal('{"error":"Your admin stats is set to false. It must be set to true to proceed"}');
+          res.should.have.status(403);
+          done();
         });
       });
     });
@@ -89,11 +89,11 @@ describe('API Routes', () => {
       .post('/api/v1/journals')
       .send({ pubemed: 533665 })
       .end((err, res) => {
-        res.should.have.status(422)
-        res.body.should.equal("Missing required parameter pubmed. Instead recieved 'pubemed'.")
-        done()
-      })
-    })
+        res.should.have.status(422);
+        res.body.should.equal("Missing required parameter pubmed. Instead recieved 'pubemed'.");
+        done();
+      });
+    });
   });
 
 
@@ -153,22 +153,22 @@ describe('API Routes', () => {
         .post('/api/v1/admin')
         .send({ appName: 'Crisper', email: 'bucket@turing.io' })
         .end((err, res) => {
-          response.should.have.status(201)
-          let token = res.body.token
+          response.should.have.status(201);
+          let token = res.body.token;
 
           chai.request(server)
           .patch('/api/v1/journals/435367')
           .set({"authorization": `${token}`})
           .send({ pubmed: 132435 })
           .end((err, res) => {
-            response.body.id.should.deep.equal(12231)
-            done()
+            response.body.id.should.deep.equal(12231);
+            done();
           });
         });
       });
     });
 
-    it.only('should be denied update priveledges if admin is set to false', (done) => {
+    it('should be denied update priveledges if admin is set to false', (done) => {
       chai.request(server)
       .post('/api/v1/journals')
       .send({id: 12231, pubmed: 435367})
@@ -180,17 +180,17 @@ describe('API Routes', () => {
         .post('/api/v1/admin')
         .send({ appName: 'Crisper', email: 'bucket@poo.io' })
         .end((err, res) => {
-          res.should.have.status(200)
+          res.should.have.status(200);
           let token = res.body.token;
 
           chai.request(server)
           .patch('/api/v1/journals/435637')
           .set({"authorization": `${token}`})
           .end((err, res) => {
-            res.should.have.status(403)
-            res.body.error.should.equal("Your admin stats is set to false. It must be set to true to proceed")
-            done()
-          })
+            res.should.have.status(403);
+            res.body.error.should.equal("Your admin stats is set to false. It must be set to true to proceed");
+            done();
+          });
         });
       });
     });
