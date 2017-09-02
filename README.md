@@ -29,3 +29,9 @@ The API is REST API and uses JWT for authentication purposes. The return format 
 
 ## Authentication
 - **[<code>POST</code> admin](https://github.com/EvanSays/byob/blob/master/docs/Auth.md)** +
+
+## What is Crispr? 
+A google search will include an array of articles high or low level. We really enjoyed these and wanted to share.
+[RadioLab Podcast](http://www.radiolab.org/story/antibodies-part-1-crispr/)
+
+[Crispr Article](https://spectrum.ieee.org/biomedical/diagnostics/software-helps-gene-editing-tool-crispr-live-up-to-its-hype)
