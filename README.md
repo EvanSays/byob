@@ -2,6 +2,8 @@
 
 [![CircleCI](https://circleci.com/gh/EvanSays/byob/tree/master.svg?style=svg)](https://circleci.com/gh/EvanSays/byob/tree/master)
 
+[Heroku Deployment](https://byob-crspr.herokuapp.com/)
+
 BYOB provides access to the Crispr genes and the Journals who first published them.
 
 The API is REST API and uses JWT for authentication purposes. The return format for all end points is JSON.
